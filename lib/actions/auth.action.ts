@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 
 // Managing auth with Server SDK (admin) is much more secure (TODO: LEARN MORE ABOUT THE TOPIC)
@@ -112,6 +113,12 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function isAuthenticated() {
     const user = await getCurrentUser();
 
-    return !!user; // convert an object to a true or false boolean value using "!!"
-    
+    return !!user; // convert an object to a true or false boolean value using "!!"   
+}
+
+export async function signOut() {
+    const cookieStore = await cookies();
+    cookieStore.delete('session'); // Delete the session cookie
+    // Optionally, you might want to revoke the session token on Firebase Admin SDK
+    return { success: true, message: "Logged out successfully!" };
 }
