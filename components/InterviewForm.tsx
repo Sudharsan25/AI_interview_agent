@@ -16,7 +16,7 @@ const interviewSchema = () => {
         level: z.string().min(1, { message: "Level cannot be empty." }),
         type: z.string().min(1, { message: "Type cannot be empty." }),
         techstack: z.string().nonempty({ message: "Tech stack cannot be empty." }),
-        amount: z.number().min(1, { message: "Number of questions must be at least 1." }).max(20, { message: "Maximum 20 questions." }), // Added amount field validation
+        amount: z.coerce.number().min(1, { message: "Number of questions must be at least 1." }).max(20, { message: "Maximum 20 questions." }),
     });
 };
 
