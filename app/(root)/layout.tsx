@@ -19,11 +19,8 @@ const RootLayout =  async ({children}: {children: ReactNode}) => {
               <h2 className='text-primary-100'> AI Interview Agent</h2>
             </Link>
             <div className='flex flex-row gap-6'>
-              <Link href="/sign-in" className='flex items-center gap-2 text-2xl'>
+              <Link href="/sign-in" className='flex items-center gap-2 font-extrabold'>
                 <span className='text-primary-100'> Login </span>
-              </Link>
-              <Link href="/interview" className='flex items-center gap-2 text-2xl'>
-                <span className='text-primary-100'> Interview </span>
               </Link>
             </div>
         </div>

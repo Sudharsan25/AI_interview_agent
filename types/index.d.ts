@@ -23,6 +23,7 @@ interface Interview {
   userId: string;
   type: string;
   finalized: boolean;
+  attended: boolean;
 }
 
 interface CreateFeedbackParams {
@@ -48,7 +49,7 @@ interface InterviewCardProps {
 }
 
 interface AgentProps {
-  userName: string;
+  userName?: string;
   userId?: string;
   interviewId?: string;
   feedbackId?: string;
