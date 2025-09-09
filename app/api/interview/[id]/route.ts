@@ -1,4 +1,4 @@
-import { db } from "@/firebase/admin"; // Assuming your Firebase Admin SDK instance is correctly imported
+import { db } from '@/drizzle/db';
 import { NextRequest, NextResponse } from 'next/server';
 // Removed 'collection', 'query', 'where', 'getDocs' as they are not needed for db.collection().where().get()
 // import { collection, query, where, getDocs } from 'firebase-admin/firestore'; 

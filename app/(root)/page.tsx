@@ -3,34 +3,25 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
+import { dummyInterviews } from "@/constants";
 import InterviewCard from "@/components/InterviewCard";
 
-import { getCurrentUser } from "@/lib/actions/auth.action";
-import {
-  getInterviewsByUserId,
-  getLatestInterviews,
-} from "@/lib/actions/general.action";
+// import {
+//   getInterviewsByUserId,
+//   getLatestInterviews,
+// } from "@/lib/actions/general.action";
 
 async function Home() {
-  const user = await getCurrentUser();
 
-
-  // parallel fetching using Promise.all
-  const [userInterviews, allInterview] = await Promise.all([
-    getInterviewsByUserId(user?.id!),
-    getLatestInterviews({ userId: user?.id! }),
-  ]);
-
-  const hasPastInterviews = userInterviews?.length! > 0;
-  const hasUpcomingInterviews = allInterview?.length! > 0;
 
   return (
     <>
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
-          <h2>Your personalized AI Interview Simulator</h2>
+          <h2>Welcome to AI interview Agent.</h2>
           <p className="text-lg">
-            Practice real interview questions & get instant feedback
+            The purpose of this app is to provide real-interview simulation, with live voice agent and customized interview settings to help you practice for your interviews.
+            Every interview also has its own feedback. The interview questions and feedbacks are generated in real time using Google AI Studio and Gemini models.
           </p>
 
           <Button asChild className="btn-primary max-sm:w-full">
@@ -49,45 +40,19 @@ async function Home() {
 
       <section className="flex flex-col gap-6 mt-8">
         <h2>Your Interviews</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">  
+        {dummyInterviews.map((interview) => (
+          <InterviewCard 
+            key={interview.userId}
+            interviewId={interview.id} 
+            role={interview.role}
+            type = {interview.type}
+            techstack = {interview.techstack}
+            createdAt = {interview.createdAt}
+            />
+        ))}
 
-        <div className="interviews-section">
-          {hasPastInterviews ? (
-            userInterviews?.map((interview) => (
-              <InterviewCard
-                key={interview.id}
-                userId={user?.id}
-                interviewId={interview.id}
-                role={interview.role}
-                type={interview.type}
-                techstack={interview.techstack}
-                createdAt={interview.createdAt}
-              />
-            ))
-          ) : (
-            <p>You haven&apos;t taken any interviews yet</p>
-          )}
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-6 mt-8">
-        <h2>Take Interviews</h2>
-
-        <div className="interviews-section">
-          {hasUpcomingInterviews ? (
-            allInterview?.map((interview) => (
-              <InterviewCard
-                key={interview.id}
-                userId={user?.id}
-                interviewId={interview.id}
-                role={interview.role}
-                type={interview.type}
-                techstack={interview.techstack}
-                createdAt={interview.createdAt}
-              />
-            ))
-          ) : (
-            <p>There are no interviews available</p>
-          )}
+        
         </div>
       </section>
     </>

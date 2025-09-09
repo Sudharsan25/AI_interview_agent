@@ -215,10 +215,11 @@ export const dummyInterviews: Interview[] = [
     questions: ["What is React?"],
     finalized: false,
     createdAt: "2024-03-15T10:00:00Z",
+    attended:true
   },
   {
     id: "2",
-    userId: "user1",
+    userId: "user12",
     role: "Full Stack Developer",
     type: "Mixed",
     techstack: ["Node.js", "Express", "MongoDB", "React"],
@@ -226,5 +227,6 @@ export const dummyInterviews: Interview[] = [
     questions: ["What is Node.js?"],
     finalized: false,
     createdAt: "2024-03-14T15:30:00Z",
+    attended: false
   },
 ];

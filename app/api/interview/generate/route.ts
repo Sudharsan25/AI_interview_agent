@@ -1,9 +1,8 @@
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { getRandomInterviewCover } from "@/lib/utils"; // Assuming this utility exists and provides a string
-import { db } from "@/firebase/admin"; // Assuming this correctly imports Firestore Admin SDK instance
 import { NextRequest, NextResponse } from 'next/server'; // Import NextRequest and NextResponse
-import { getCurrentUser } from "@/lib/actions/auth.action";
+import { db } from "@/drizzle/db";
 
 // Handles GET requests to the API route
 export async function GET(){
@@ -12,14 +11,11 @@ export async function GET(){
 
 // Handles POST requests to the API route for generating and storing interviews
 export async function POST(request: NextRequest){
-    // Destructure data from the request body
-    const user = await getCurrentUser();
-
-    const {type, role, level, techstack, amount } = await request.json();
+    const { role, level, type, techstack, length, companyDetails, specialization, jobDesc }= await request.json();
 
     try{
         // Basic validation for incoming data
-        if (!role || !level || !type || !techstack || !user?.id || amount === undefined) {
+        if (!role || !level || !type || !techstack || !user?.id || length === undefined) {
             return NextResponse.json({ message: 'Missing or invalid required fields.' }, { status: 400 });
         }
 
@@ -27,7 +23,7 @@ export async function POST(request: NextRequest){
         // Ensure techstack is an array before joining, as it's sent as an array from the client
         const techstackString = Array.isArray(techstack) ? techstack.join(', ') : techstack;
 
-        const prompt = `Prepare exactly ${amount} questions for a job interview.
+        const prompt = `Prepare exactly ${length} questions for a job interview.
                         The job role is ${role}.
                         The job experience level is ${level}.
                         The tech stack used in the job is: ${techstackString}.
@@ -36,7 +32,7 @@ export async function POST(request: NextRequest){
                         The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
                         Return the questions formatted as a JSON array of strings, like this:
                         ["Question 1", "Question 2", "Question 3"]
-                        Ensure there are exactly ${amount} questions.`;
+                        Ensure there are exactly ${length} questions.`;
 
         // Generate text (interview questions) using the AI SDK
         const result = await generateText({
@@ -74,7 +70,7 @@ export async function POST(request: NextRequest){
             type,
             level,
             techstack: techstack, // Store techstack as an array
-            amount: parseInt(amount, 10), // Ensure amount is stored as a number
+            length: parseInt(length, 10), // Ensure length is stored as a number
             userId: user?.id,
             finalized: true,
             coverImage: getRandomInterviewCover(), // Use the utility function for a cover image

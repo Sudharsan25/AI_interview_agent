@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, serial, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -61,8 +61,8 @@ export const verification = pgTable("verification", {
 });
 
 export const interviews = pgTable("interviews",{
-    id: serial("id").primaryKey(),
-    userId: integer("userId").notNull().references(
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("userId").notNull().references(
       () => user.id,{onDelete:'cascade'}
     ),
     role: text("role").notNull(),
@@ -76,8 +76,8 @@ export const interviews = pgTable("interviews",{
 })
 
 export const questions = pgTable("questions",{
-    id: serial("id").primaryKey(),
-    interviewId: integer("interviewId").notNull().references(
+    id: uuid("id").primaryKey().defaultRandom(), // Use uuid for the primary key
+    interviewId: uuid("interviewId").notNull().references(
       ()=> interviews.id, {onDelete: "cascade"},
     ),
     questionText: text("questionText").notNull(),

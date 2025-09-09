@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1757436341046,
+      "tag": "0000_certain_kronos",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757436545282,
+      "tag": "0001_previous_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757436731686,
+      "tag": "0002_useful_ironclad",
+      "breakpoints": true
+    }
+  ]
+}

@@ -16,7 +16,10 @@ const interviewSchema = () => {
         level: z.string().min(1, { message: "Level cannot be empty." }),
         type: z.string().min(1, { message: "Type cannot be empty." }),
         techstack: z.string().nonempty({ message: "Tech stack cannot be empty." }),
-        amount: z.coerce.number().min(1, { message: "Number of questions must be at least 1." }).max(20, { message: "Maximum 20 questions." }),
+        length: z.string().nonempty({ message: "Please provide the interview Length." }),
+        jobDesc: z.string().min(4),
+        companyDetails:z.string().optional(),
+        specialization: z.string().optional(),
     });
 };
 
@@ -29,21 +32,24 @@ const InterviewForm = () => {
             level: "",
             type: "",
             techstack: "",
-            amount: 5, // Default value for number of questions
+            length:"",
+            companyDetails:"",
+            specialization:"",
+            jobDesc:"",
         },
     });
     const router = useRouter();
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
       console.log("Clicked")
-        const { role, level, type, techstack, amount } = data; // Destructure amount
+        const { role, level, type, techstack, length, companyDetails, specialization, jobDesc } = data; // Destructure amount
         const techstack_array = techstack.split(",").map(item => item.trim()); // Trim whitespace
 
         // IMPORTANT: In a real application, 'userid' should come from your authentication system (e.g., Firebase Auth currentUser.uid).
         // For demonstration purposes, we're generating a simple placeholder ID.
         const userId = "user_" + Math.random().toString(36).substring(2, 15);
 
-        console.log("Submitted data:", { role, level, type, techstack: techstack_array, amount, userId });
+        console.log("Submitted data:", { role, level, type, techstack: techstack_array, length, companyDetails, specialization , jobDesc});
 
         try {
             const response = await fetch('/api/interview/generate', {
@@ -56,8 +62,10 @@ const InterviewForm = () => {
                     level,
                     type,
                     techstack: techstack_array,
-                    amount, // Pass amount to the API
-                    userid: userId, // Pass the generated/actual user ID
+                    length,
+                    companyDetails,
+                    specialization,
+                    userid: userId,
                 }),
             });
 
@@ -131,10 +139,34 @@ const InterviewForm = () => {
 
                         <FormFieldCompnent
                             control={form.control}
-                            name="amount"
-                            label="No. of Questions"
-                            placeholder="How many questions would you like?"
-                            type="number" // Changed to number type for input
+                            name="length"
+                            label="The length of interview"
+                            placeholder="Would you like the interview to be short, medium, or long?"
+                            type="text" // Changed to number type for input
+                        />
+
+                        <FormFieldCompnent
+                            control={form.control}
+                            name="jobDesc "
+                            label="Job Description"
+                            placeholder="Skills or responsibilities specific to the Job description"
+                            type="text" // Changed to number type for input
+                        />
+
+                        <FormFieldCompnent
+                            control={form.control}
+                            name="specialization"
+                            label="Specialization of the role (If Applicable)"
+                            placeholder="Any specific domain or team that you would be working on"
+                            type="text" // Changed to number type for input
+                        />
+
+                        <FormFieldCompnent
+                            control={form.control}
+                            name="companyDetails"
+                            label="Details about the company (Optional)"
+                            placeholder="The company name, vision, mission and principles followed"
+                            type="text" // Changed to number type for input
                         />
 
                         <Button className="btn" type="submit">
