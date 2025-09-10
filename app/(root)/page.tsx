@@ -1,18 +1,48 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import { dummyInterviews } from "@/constants";
 import InterviewCard from "@/components/InterviewCard";
+import { useEffect, useState } from "react";
+import { Interview } from "@/types";
+import { fetchUserInterviews } from "@/lib/utils";
+import { InterviewListSkeleton } from "@/components/SkeletonInterviewList";
 
 // import {
 //   getInterviewsByUserId,
 //   getLatestInterviews,
 // } from "@/lib/actions/general.action";
 
-async function Home() {
+export default function InterviewList() {
+  const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const loadInterviews = async () => {
+      try {
+        const data = await fetchUserInterviews();
+        setInterviews(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInterviews();
+  }, []);
+
+  if (isLoading) {
+    // 2. Render the skeleton component instead of the old text
+    return <InterviewListSkeleton />;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <>
@@ -41,7 +71,7 @@ async function Home() {
       <section className="flex flex-col gap-6 mt-8">
         <h2>Your Interviews</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">  
-        {dummyInterviews.map((interview) => (
+        {interviews.map((interview) => (
           <InterviewCard 
             key={interview.userId}
             interviewId={interview.id} 
@@ -57,6 +87,4 @@ async function Home() {
       </section>
     </>
   );
-}
-
-export default Home;
+};

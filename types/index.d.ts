@@ -13,17 +13,18 @@ interface Feedback {
   createdAt: string;
 }
 
-interface Interview {
-  id: string;
+export interface Interview {
+  id: string; // Assuming uuid
+  userId: string;
   role: string;
   level: string;
-  questions: string[];
-  techstack: string[];
-  createdAt: string;
-  userId: string;
   type: string;
-  finalized: boolean;
-  attended: boolean;
+  techstack: string[]; // Or string[] if you store it as a JSON array
+  length: string;
+  jobDesc: string;
+  companyDetails?: string | null;
+  specialization?: string | null;
+  createdAt: string; // ISO date string
 }
 
 interface CreateFeedbackParams {

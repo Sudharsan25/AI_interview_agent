@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 import { interviewCovers, mappings } from "@/constants";
+import { Interview } from "@/types";
 const techIconBaseURL = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 const normalizeTechName = (tech: string) => {
@@ -45,3 +46,15 @@ export const getRandomInterviewCover = () => {
   const randomIndex = Math.floor(Math.random() * interviewCovers.length);
   return `/covers${interviewCovers[randomIndex]}`;
 };
+
+export async function fetchUserInterviews(): Promise<Interview[]> {
+  const response = await fetch('/api/interview/get-users-interview');
+
+  if (!response.ok) {
+    // This will activate the nearest `error.js` Error Boundary
+    throw new Error('Failed to fetch interviews');
+  }
+
+  const result = await response.json();
+  return result.data;
+}

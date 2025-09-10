@@ -72,7 +72,8 @@ export const interviews = pgTable("interviews",{
     length: text("length").notNull(),
     jobDesc: text("jobDesc").notNull(),
     companyDetails: text("companyDetails"),
-    specialization: text("specialization")
+    specialization: text("specialization"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
 export const questions = pgTable("questions",{

@@ -17,7 +17,7 @@ const interviewSchema = () => {
         type: z.string().min(1, { message: "Type cannot be empty." }),
         techstack: z.string().nonempty({ message: "Tech stack cannot be empty." }),
         length: z.string().nonempty({ message: "Please provide the interview Length." }),
-        jobDesc: z.string().min(4),
+        jobDesc: z.string().min(8),
         companyDetails:z.string().optional(),
         specialization: z.string().optional(),
     });
@@ -45,10 +45,6 @@ const InterviewForm = () => {
         const { role, level, type, techstack, length, companyDetails, specialization, jobDesc } = data; // Destructure amount
         const techstack_array = techstack.split(",").map(item => item.trim()); // Trim whitespace
 
-        // IMPORTANT: In a real application, 'userid' should come from your authentication system (e.g., Firebase Auth currentUser.uid).
-        // For demonstration purposes, we're generating a simple placeholder ID.
-        const userId = "user_" + Math.random().toString(36).substring(2, 15);
-
         console.log("Submitted data:", { role, level, type, techstack: techstack_array, length, companyDetails, specialization , jobDesc});
 
         try {
@@ -63,9 +59,10 @@ const InterviewForm = () => {
                     type,
                     techstack: techstack_array,
                     length,
+                    jobDesc,
                     companyDetails,
                     specialization,
-                    userid: userId,
+                
                 }),
             });
 
@@ -147,7 +144,7 @@ const InterviewForm = () => {
 
                         <FormFieldCompnent
                             control={form.control}
-                            name="jobDesc "
+                            name="jobDesc"
                             label="Job Description"
                             placeholder="Skills or responsibilities specific to the Job description"
                             type="text" // Changed to number type for input

@@ -3,8 +3,9 @@ import Image from 'next/image';
 import React from 'react'
 import { Button } from './ui/button';
 import Link from 'next/link';
-import DisplayTechIcons from './DisplayTechIcons';
+import { Feedback, InterviewCardProps } from '@/types';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const InterviewCard = ({interviewId, role, type, techstack, createdAt}: InterviewCardProps) => {
 
     const feedback = null as Feedback | null;
@@ -44,8 +45,7 @@ const InterviewCard = ({interviewId, role, type, techstack, createdAt}: Intervie
                     </p>
                 </div>
 
-                <div className='flex flex-row justify-between'>
-                    <DisplayTechIcons techStack={techstack} />
+                <div className='flex flex-row justify-end'>
 
                     <Button className='btn-primary'>
                         <Link href={feedback ? `/interview/${interviewId}/feedback`: `interview/${interviewId}/details`}>
