@@ -5,9 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-import { interviewCovers, mappings } from "@/constants";
+import { mappings } from "@/constants";
 import { Interview } from "@/types";
 const techIconBaseURL = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
+
+const knownTechs = ["nextjs", "react", "python", "typescript", "javascript", "nodejs"];
+
+
 
 const normalizeTechName = (tech: string) => {
   const key = tech.toLowerCase().replace(/\.js$/, "").replace(/\s+/g, "");
@@ -23,28 +27,23 @@ const checkIconExists = async (url: string) => {
   }
 };
 
-export const getTechLogos = async (techArray: string[]) => {
-  const logoURLs = techArray.map((tech) => {
-    const normalized = normalizeTechName(tech);
-    return {
-      tech,
-      url: `${techIconBaseURL}/${normalized}/${normalized}-original.svg`,
-    };
-  });
+export const getInterviewLogo = async (interviewTitle: string) => {
+  const defaultIcon = "/interview-icon.svg"; // Define your default icon path
+  
+  // Logic will go here
+  const titleLower = interviewTitle.toLowerCase();
+  const foundTech = knownTechs.find(tech => titleLower.includes(tech));
 
-  const results = await Promise.all(
-    logoURLs.map(async ({ tech, url }) => ({
-      tech,
-      url: (await checkIconExists(url)) ? url : "/tech.svg",
-    }))
-  );
+  if (!foundTech) {
+    return defaultIcon;
+  }
 
-  return results;
-};
+  const normalized = normalizeTechName(foundTech);
+  const iconUrl = `${techIconBaseURL}/${normalized}/${normalized}-original.svg`;
 
-export const getRandomInterviewCover = () => {
-  const randomIndex = Math.floor(Math.random() * interviewCovers.length);
-  return `/covers${interviewCovers[randomIndex]}`;
+  const exists = await checkIconExists(iconUrl);
+
+  return exists ? iconUrl : defaultIcon;
 };
 
 export async function fetchUserInterviews(): Promise<Interview[]> {

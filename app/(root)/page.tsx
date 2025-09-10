@@ -54,7 +54,7 @@ export default function InterviewList() {
             Every interview also has its own feedback. The interview questions and feedbacks are generated in real time using Google AI Studio and Gemini models.
           </p>
 
-          <Button asChild className="btn-primary max-sm:w-full">
+          <Button className="w-full rounded-2xl" variant="outline">
             <Link href="/interview/create/">Create a new Interview</Link>
           </Button>
         </div>
@@ -77,8 +77,12 @@ export default function InterviewList() {
             interviewId={interview.id} 
             role={interview.role}
             type = {interview.type}
+            level={interview.level}
             techstack = {interview.techstack}
+            length={interview.length}
             createdAt = {interview.createdAt}
+            jobDesc = {interview.jobDesc}
+            companyDetails = {interview.companyDetails}
             />
         ))}
 

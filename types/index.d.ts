@@ -19,7 +19,7 @@ export interface Interview {
   role: string;
   level: string;
   type: string;
-  techstack: string[]; // Or string[] if you store it as a JSON array
+  techstack: string; // Or string[] if you store it as a JSON array
   length: string;
   jobDesc: string;
   companyDetails?: string | null;
@@ -45,8 +45,13 @@ interface InterviewCardProps {
   userId?: string;
   role: string;
   type: string;
-  techstack: string[];
-  createdAt?: string;
+  level: string;
+  length: string;
+  techstack: string;
+  jobDesc: string,
+  companyDetails?: string | null;
+  specialization?: string | null;
+  createdAt: string;
 }
 
 interface AgentProps {

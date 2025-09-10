@@ -43,9 +43,8 @@ const InterviewForm = () => {
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
       console.log("Clicked")
         const { role, level, type, techstack, length, companyDetails, specialization, jobDesc } = data; // Destructure amount
-        const techstack_array = techstack.split(",").map(item => item.trim()); // Trim whitespace
 
-        console.log("Submitted data:", { role, level, type, techstack: techstack_array, length, companyDetails, specialization , jobDesc});
+        console.log("Submitted data:", { role, level, type, techstack, length, companyDetails, specialization , jobDesc});
 
         try {
             const response = await fetch('/api/interview/generate', {
@@ -57,7 +56,7 @@ const InterviewForm = () => {
                     role,
                     level,
                     type,
-                    techstack: techstack_array,
+                    techstack,
                     length,
                     jobDesc,
                     companyDetails,

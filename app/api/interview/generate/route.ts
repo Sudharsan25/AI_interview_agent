@@ -95,7 +95,7 @@ export async function POST(request: NextRequest){
             role,
             level,
             type,
-            techstack, // Store techstack as an array
+            techstack: techstackString, // Store techstack as an array
             length, // Ensure length is stored as a number
             jobDesc,
             companyDetails,

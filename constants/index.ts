@@ -1,7 +1,10 @@
+import { Interview } from "@/types";
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 import { z } from "zod";
 
 export const mappings = {
+  python: "python",
+  pythondev:"python",
   "react.js": "react",
   reactjs: "react",
   react: "react",
@@ -210,23 +213,21 @@ export const dummyInterviews: Interview[] = [
     userId: "user1",
     role: "Frontend Developer",
     type: "Technical",
-    techstack: ["React", "TypeScript", "Next.js", "Tailwind CSS"],
+    techstack: "{React,TypeScript,Next.js, Tailwind CSS}",
     level: "Junior",
-    questions: ["What is React?"],
-    finalized: false,
+    length:"Short",
+    jobDesc:"",
     createdAt: "2024-03-15T10:00:00Z",
-    attended:true
   },
   {
     id: "2",
     userId: "user12",
     role: "Full Stack Developer",
     type: "Mixed",
-    techstack: ["Node.js", "Express", "MongoDB", "React"],
+    techstack: "{React,TypeScript,Next.js, Tailwind CSS}",
     level: "Senior",
-    questions: ["What is Node.js?"],
-    finalized: false,
+    length:"Short",
+    jobDesc:"",
     createdAt: "2024-03-14T15:30:00Z",
-    attended: false
   },
 ];
