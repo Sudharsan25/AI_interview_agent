@@ -1,16 +1,15 @@
-"use client";
+import InterviewClient from "@/components/InterviewClient";
+import { getInterviewData } from "@/server/questions";
 
-import { useParams } from "next/navigation";
+const InterviewSession = async ({ params }: { params: { id: string } }) => {
+    const interviewId = await params.id as string;
 
-const InterviewSession = () => {
-    const params = useParams();
-    const interviewId = params.id as string;
-
+    const interviewData = await getInterviewData(interviewId);
 
     return (
         <>
       <div className='flex flex-col gap-4 items-center'>
-        Interview Details, ID: {interviewId}
+        <InterviewClient initialData={interviewData} />
       </div>
         
     </>

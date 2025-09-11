@@ -5,10 +5,12 @@ import Image from 'next/image';
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import z from 'zod';
-import { Form } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import FormFieldCompnent from './FormField'; // Assuming this path is correct
 import { useRouter } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { toast } from 'sonner';
 
 const interviewSchema = () => {
     return z.object({
@@ -16,7 +18,9 @@ const interviewSchema = () => {
         level: z.string().min(1, { message: "Level cannot be empty." }),
         type: z.string().min(1, { message: "Type cannot be empty." }),
         techstack: z.string().nonempty({ message: "Tech stack cannot be empty." }),
-        length: z.string().nonempty({ message: "Please provide the interview Length." }),
+        length: z.enum(["short", "medium", "long"], {
+            required_error: "Please select an interview length.",
+        }),
         jobDesc: z.string().min(8),
         companyDetails:z.string().optional(),
         specialization: z.string().optional(),
@@ -32,7 +36,7 @@ const InterviewForm = () => {
             level: "",
             type: "",
             techstack: "",
-            length:"",
+            length:"short",
             companyDetails:"",
             specialization:"",
             jobDesc:"",
@@ -86,7 +90,7 @@ const InterviewForm = () => {
     };
 
     return (
-        <div className="card-border w-full">
+        <div className="card-border w-fit">
             <div className="flex flex-col items-center gap-6 card py-14 px-10">
                 <div className="flex flex-row gap-2 justify-center">
                     {/* Assuming /logo.svg exists in your public directory */}
@@ -121,7 +125,7 @@ const InterviewForm = () => {
                             control={form.control}
                             name="level"
                             label="Experience Level"
-                            placeholder="Experience required for job (Entry, Mid, Senior)..."
+                            placeholder="Entry, Mid, Senior..."
                             type="text"
                         />
 
@@ -129,17 +133,42 @@ const InterviewForm = () => {
                             control={form.control}
                             name="techstack"
                             label="Skills/Technologies"
-                            placeholder="Skills required for job (comma-separated, e.g., React, Node.js, Python)..."
+                            placeholder="e.g., React, Node.js, Python..."
                             type="text"
                         />
 
-                        <FormFieldCompnent
+                        <FormField
                             control={form.control}
                             name="length"
-                            label="The length of interview"
-                            placeholder="Would you like the interview to be short, medium, or long?"
-                            type="text" // Changed to number type for input
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>The length of interview</FormLabel>
+                                    <Select
+                                        onValueChange={(value) => {
+                                            if (value === "medium" || value === "long") {
+                                                toast("This is a beta version using free resources, so usage is restricted to short interviews only. We apologize for the inconvenience.");
+                                            } else {
+                                                field.onChange(value); // Only update form for 'short'
+                                            }
+                                        }}
+                                        value={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="w-full rounded-2xl min-h-12">
+                                                <SelectValue placeholder="Select an interview length" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem className='rounded-2xl' value="short">Short</SelectItem>
+                                            <SelectItem className='rounded-2xl' value="medium">Medium (Coming Soon)</SelectItem>
+                                            <SelectItem className='rounded-2xl' value="long">Long (Coming Soon)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
+                        
 
                         <FormFieldCompnent
                             control={form.control}
@@ -153,7 +182,7 @@ const InterviewForm = () => {
                             control={form.control}
                             name="specialization"
                             label="Specialization of the role (If Applicable)"
-                            placeholder="Any specific domain or team that you would be working on"
+                            placeholder="Any specific domain or team"
                             type="text" // Changed to number type for input
                         />
 
@@ -161,7 +190,7 @@ const InterviewForm = () => {
                             control={form.control}
                             name="companyDetails"
                             label="Details about the company (Optional)"
-                            placeholder="The company name, vision, mission and principles followed"
+                            placeholder="Company Name, Vision, Mission and Principles followed"
                             type="text" // Changed to number type for input
                         />
 

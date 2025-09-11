@@ -1,0 +1,19 @@
+// e.g., in components/ContentWrapper.tsx
+import React from 'react';
+import { clsx } from 'clsx'; // Optional: for conditional classes
+
+interface ContentWrapperProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const ContentWrapper = ({ children, className }: ContentWrapperProps) => {
+  return (
+    <main className={clsx(
+      "mx-auto max-w-7xl px-12 max-sm:px-4 my-12 max-sm:my-8",
+      className
+    )}>
+      {children}
+    </main>
+  );
+};

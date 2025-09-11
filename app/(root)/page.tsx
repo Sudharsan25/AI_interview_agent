@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Interview } from "@/types";
 import { fetchUserInterviews } from "@/lib/utils";
 import { InterviewListSkeleton } from "@/components/SkeletonInterviewList";
+import { ContentWrapper } from "@/components/ComponentWrapper";
 
 // import {
 //   getInterviewsByUserId,
@@ -45,7 +46,8 @@ export default function InterviewList() {
   }
 
   return (
-    <>
+    <ContentWrapper>
+      <>
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
           <h2>Welcome to AI interview Agent.</h2>
@@ -90,5 +92,7 @@ export default function InterviewList() {
         </div>
       </section>
     </>
+    </ContentWrapper>
+    
   );
 };

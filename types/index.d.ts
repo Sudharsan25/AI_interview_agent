@@ -24,7 +24,7 @@ export interface Interview {
   jobDesc: string;
   companyDetails?: string | null;
   specialization?: string | null;
-  createdAt: string; // ISO date string
+  createdAt: Date; // ISO date string
 }
 
 interface CreateFeedbackParams {
@@ -51,7 +51,20 @@ interface InterviewCardProps {
   jobDesc: string,
   companyDetails?: string | null;
   specialization?: string | null;
-  createdAt: string;
+  createdAt: Date;
+}
+
+interface Question {
+  id: string,
+  interviewId: string,
+  questionText: string
+}
+
+interface InterviewClientProps {
+  initialData: {
+    details: Interview;
+    questions: Question[];
+  };
 }
 
 interface AgentProps {

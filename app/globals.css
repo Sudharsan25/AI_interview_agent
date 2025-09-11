@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -43,7 +42,7 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --input: oklch(49.261% 0.00006 271.152 / 0.15);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -234,7 +233,7 @@
     }
 
     .input {
-      @apply !bg-dark-200 !rounded-full !min-h-12 !px-5 placeholder:!text-light-100;
+      @apply !bg-dark-200 !rounded-2xl !min-h-12 !px-5   text-light-100;
     }
 
     .btn {
@@ -295,8 +294,8 @@
   }
 
   .root-layout {
-    @apply flex mx-auto max-w-7xl flex-col gap-12 mt-4 mb-12 px-12 max-sm:px-4 max-sm:my-8 min-h-screen w-full;
-  }
+  @apply flex flex-col min-h-screen w-full;
+}
 
   .card-cta {
     @apply flex flex-row blue-gradient-dark rounded-3xl px-16 py-6 items-center justify-between max-sm:px-4;
@@ -328,7 +327,13 @@
 }
 
 @utility dark-gradient {
-  @apply bg-gradient-to-b from-[#1A1C20] to-[#08090D];
+ /* A neutral dark gray gradient */
+ @apply bg-gradient-to-b from-[#1c1c1c] to-[#0a0a0a];
+}
+/* ... */
+@utility blue-gradient-dark {
+   /* Re-using the same neutral gradient for consistency */
+   @apply bg-gradient-to-b from-[#1c1c1c] to-[#0a0a0a];
 }
 
 @utility border-gradient {
@@ -337,10 +342,6 @@
 
 @utility pattern {
   @apply bg-[url('/pattern.png')] bg-top bg-no-repeat;
-}
-
-@utility blue-gradient-dark {
-  @apply bg-gradient-to-b from-[#171532] to-[#08090D];
 }
 
 @utility blue-gradient {
