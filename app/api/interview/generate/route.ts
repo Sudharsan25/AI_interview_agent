@@ -51,13 +51,13 @@ export async function POST(request: NextRequest){
 
         // Place this logic before your prompt string
         const lengthMap = {
-        short: 5,
-        mid: 10,
-        long: 15,
+            short: 5,
+            mid: 8,
+            long: 10,
         };
 
         // Use the map to get the number, with a fallback to a default value
-        const numberOfQuestions = lengthMap[length as keyof typeof lengthMap] || 10;
+        const numberOfQuestions = lengthMap[length as keyof typeof lengthMap] || 5;
         // Start with the base prompt containing all the required information
         let prompt = `Prepare exactly ${numberOfQuestions} questions for a job interview.
             The job role is ${role}.

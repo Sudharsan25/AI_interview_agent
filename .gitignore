@@ -8,6 +8,8 @@
 # testing
 /coverage
 
+/aiinterviewagent-471504-cb232dcb1f06.json
+
 # next.js
 /.next/
 /out/

@@ -2,7 +2,8 @@ import InterviewClient from "@/components/InterviewClient";
 import { getInterviewData } from "@/server/questions";
 
 const InterviewSession = async ({ params }: { params: { id: string } }) => {
-    const interviewId = await params.id as string;
+    const interviewSessionParams = await params;
+    const interviewId = interviewSessionParams.id as string;
 
     const interviewData = await getInterviewData(interviewId);
 
