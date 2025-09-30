@@ -2,24 +2,32 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
-// Define the props for the hook
+// Define the props the hook can accept
 interface UseTextToSpeechProps {
-  onEnd?: () => void; // A callback function to run when speech finishes
+  // A callback function to run when speech finishes playing
+  onEnd?: () => void;
 }
 
 export const useTextToSpeech = ({ onEnd }: UseTextToSpeechProps = {}) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  // Use a ref to hold the Audio object so it persists across re-renders
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Use a ref to hold the object URL to prevent memory leaks
+  const audioUrlRef = useRef<string | null>(null);
 
-  const play = async (text: string) => {
-    // Don't start a new speech if one is already playing
-    if (isSpeaking || !text) return;
+  const play = useCallback(async (text: string) => {
+    // Prevent starting a new speech if one is already loading or playing
+    if (isLoading || isSpeaking || !text) return;
 
-    setIsSpeaking(true);
+    setIsLoading(true);
 
     try {
-      // 1. Call your internal API route to get the audio
+      // 1. Call your internal API route to get the audio stream
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -27,31 +35,67 @@ export const useTextToSpeech = ({ onEnd }: UseTextToSpeechProps = {}) => {
       });
 
       if (!response.ok || !response.body) {
-        throw new Error('Failed to get audio stream from server.');
+        throw new Error('Failed to get audio stream from the server.');
       }
 
-      // 2. Play the audio stream in the browser
-      const audioContext = new AudioContext();
-      const source = audioContext.createBufferSource();
-      const audioBuffer = await audioContext.decodeAudioData(await response.arrayBuffer());
-      
-      source.buffer = audioBuffer;
-      source.connect(audioContext.destination);
-      source.start(0);
+      // 2. Convert the streamed response into a Blob and create a playable URL
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      audioUrlRef.current = url;
 
-      // 3. Set up the onended event to clean up
-      source.onended = () => {
+      // 3. Create a new Audio object and store it in the ref
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      
+      // 4. Set up event listeners for when playback starts and ends
+      audio.onplay = () => {
+        setIsLoading(false);
+        setIsSpeaking(true);
+      };
+      
+      audio.onended = () => {
         setIsSpeaking(false);
         if (onEnd) {
           onEnd();
         }
       };
+      
+      audio.onerror = () => {
+        console.error("Error playing audio.");
+        setIsLoading(false);
+        setIsSpeaking(false);
+      };
+
+      audio.play();
 
     } catch (error) {
-      console.error("Error playing text-to-speech:", error);
+      console.error("Error in useTextToSpeech hook:", error);
+      setIsLoading(false);
       setIsSpeaking(false);
     }
-  };
+  }, [isLoading, isSpeaking, onEnd]);
 
-  return { isSpeaking, play };
+  const stop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsSpeaking(false);
+    }
+  }, []);
+  
+  // Cleanup function to run when the component using the hook unmounts
+  useEffect(() => {
+    return () => {
+      // Stop any playing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      // Revoke the object URL to prevent memory leaks
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+      }
+    };
+  }, []);
+
+  return { isLoading, isSpeaking, play, stop };
 };

@@ -14,6 +14,7 @@ import {
 import { Feedback, InterviewCardProps } from '@/types';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
+import { getRandomInterviewCover } from '@/lib/utils';
 // A helper component for consistent styling
 const DetailRow = ({ label, value }: { label: string; value: string }) => (
   <div className="grid grid-cols-3 items-center gap-4">
@@ -23,73 +24,58 @@ const DetailRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const InterviewCard = ({interviewId, role, type, length, level, techstack, jobDesc, companyDetails, specialization, createdAt}: InterviewCardProps) => {
+const InterviewCard = ({interviewId, role, type, length, level, techstack, jobDesc, companyDetails, specialization}: InterviewCardProps) => {
 
-    const feedback = null as Feedback | null;
-    const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
-    const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-    
-    // ...existing code...
-    // ...existing code...
-    const techArray = techstack.split(",").map((t) => t.trim());
-
-
-
+  const techArray = techstack.split(",").map((t) => t.trim());
     return (
         <div className='card-border w-[405] min-h-[120]'>
             <div className="card-interview">
                 <div className='flex flex-col justify-around gap-4'>
-                    <div>
-                        <div className='absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg bg-light-600'>
-                            <p className='badge-text'>{normalizedType}</p>
-                        </div>
-
-                        {/* <Image src={getRandomInterviewCover()} alt='cover image' width={90} height={90} className='rounded-full object-fit size-[90px]' /> */}
+                    <div className='flex flex-col justify-around gap-4'>
+                        <div className='flex gap-4'>
+                            <Image src={getRandomInterviewCover()} alt='cover image' width={50} height={50} className='rounded-full object-fit size-[90px]' />
 
                         <h3 className='mt-5 capitalize'>
                             {role} Interview
                         </h3>
-
-                        <div className='flex flex-row gap-5 mt-3'>
-                            <div className='flex flex-row gap-2'>
-                                <Image src='/calendar.svg' alt='calendar' width={22} height={22}/>
-                                <p>{formattedDate}</p>
-                            </div>
-
-                            <div className="flex flex-row gap-2">
-                                <Image src='/star.svg' alt='star' height={22} width={22}/>
-                                <p>{feedback?.totalScore || '--'}/100</p>
-                            </div>
                         </div>
-                    </div>
 
-                    <p className="line-clamp-2 mt-5">
-                        {feedback?.finalAssessment || "You haven't taken the interview yet!! Take it now"}
-                    </p>
+                        <div className="flex flex-col items-start justify-around gap-4 text-lg text-muted-foreground">
+                            <span className="flex items-center gap-1.5">Experience level: {level}</span>
+                            <span className="flex items-center gap-1.5">Interview length: {length}</span>
+                        </div>
+
+                        <div className="grid gap-2">
+                                <span className="text-sm font-medium text-muted-foreground">
+                                Technologies
+                                </span>
+                                <div className="flex flex-wrap gap-2">
+                                {techArray.map((tech) => (
+                                    <Badge key={tech} variant="secondary">
+                                    {tech}
+                                    </Badge>
+                                ))}
+                                </div>
+                            </div>
+                    </div>
                 </div>
 
-                <div className='flex flex-row justify-end'>
+                <div className='flex flex-row justify-around gap-2'>
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button className="w-full rounded-2xl" variant="outline">
-                            Interview Details
+                            <Button className="w-fit rounded-2xl" variant="outline">
+                                More Details
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
                             <DialogTitle>{role}</DialogTitle>
                             <DialogDescription>
-                                Created on {formattedDate}. Type: {type}.
+                                Type: {type}.
                             </DialogDescription>
                             </DialogHeader>
 
                             <div className="grid gap-4 py-4">
-                            <DetailRow label="Experience Level" value={level} />
-                            <DetailRow label="Interview Length" value={length} />
 
                             {/* Conditionally render optional fields */}
                             {specialization && (
@@ -106,20 +92,6 @@ const InterviewCard = ({interviewId, role, type, length, level, techstack, jobDe
                                 </span>
                                 <p className="text-sm text-foreground">{jobDesc}</p>
                             </div>
-
-                            {/* Tech Stack with Badges */}
-                            <div className="grid gap-2">
-                                <span className="text-sm font-medium text-muted-foreground">
-                                Technologies
-                                </span>
-                                <div className="flex flex-wrap gap-2">
-                                {techArray.map((tech) => (
-                                    <Badge key={tech} variant="secondary">
-                                    {tech}
-                                    </Badge>
-                                ))}
-                                </div>
-                            </div>
                             </div>
 
                             <DialogFooter className="sm:justify-between">
@@ -133,10 +105,12 @@ const InterviewCard = ({interviewId, role, type, length, level, techstack, jobDe
                                 </Link>
                             </DialogFooter>
                         </DialogContent>
-                        </Dialog>
+                    </Dialog>
+                    <Link href={`/interview/${interviewId}`}>
+                        <Button className='rounded-2xl' variant="outline">Start Interview</Button>
+                    </Link>
                 </div>
             </div>
-        
         </div>
     )
 }

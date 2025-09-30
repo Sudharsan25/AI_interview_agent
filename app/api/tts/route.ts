@@ -1,39 +1,69 @@
 // in app/api/tts/route.ts
 
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import { NextRequest, NextResponse } from "next/server";
+import {PollyClient, SynthesizeSpeechCommand} from "@aws-sdk/client-polly"
+import { Readable } from "stream";
 
-// Initialize the ElevenLabs client using the API key from environment variables
-const elevenlabs = new ElevenLabsClient({
-  apiKey: process.env.ELEVENLABS_API_KEY,
+const pollyCilent = new PollyClient({
+    region: "us-east-1",
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    }
 });
 
-export async function POST(request: NextRequest) {
-  try {
-    // 1. Extract the text from the request body
-    const { text } = await request.json();
-    if (!text) {
+export async function POST(request: NextRequest){
+    try{
+        const {text} = await request.json();
+
+         if (!text) {
       return NextResponse.json({ message: 'Text is required.' }, { status: 400 });
     }
 
-    // 2. Call the ElevenLabs API to get the audio stream
-    const audioStream = await elevenlabs.textToSpeech.stream("JBFqnCBsd6RMkjVDRZzb",{
-      outputFormat: "mp3_44100_128", // A default voice, you can make this dynamic
-      text: text,
-      modelId: "eleven_multilingual_v2",
-    });
+        const command = new SynthesizeSpeechCommand({
+            OutputFormat: "mp3",
+            Text: text,
+            VoiceId:"Joanna",
+            Engine:"neural"
+        });
 
-    // 3. Stream the audio back to the client
-    // The 'ReadableStream' from the SDK is directly usable in a NextResponse
-    return new NextResponse(audioStream, {
-      headers: {
-        'Content-Type': 'audio/mpeg',
-      },
-    });
+        const response = await pollyCilent.send(command);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error("Error in TTS API route:", error);
-    return NextResponse.json({ message: error.message || 'Failed to generate audio.' }, { status: 500 });
-  }
+        if(!response.AudioStream){
+            return NextResponse.json({error: `No audio stream received from Polly: ${response.$metadata}`}, {status: 500});
+        }
+
+        // 1. Check if the AudioStream from AWS is a valid Node.js Readable stream.
+        if (response.AudioStream && response.AudioStream instanceof Readable) {
+          const nodeStream = response.AudioStream as Readable;
+
+          // 2. Create a new Web API ReadableStream.
+          const webStream = new ReadableStream({
+            start(controller) {
+              // 3. Set up event listeners to pipe the data.
+              nodeStream.on("data", (chunk) => {
+                // When the Node stream gets a chunk of data, enqueue it in our new Web stream.
+                controller.enqueue(chunk);
+              });
+              nodeStream.on("end", () => {
+                // When the Node stream finishes, close our new Web stream.
+                controller.close();
+              });
+              nodeStream.on("error", (err) => {
+                // If the Node stream has an error, propagate it to our Web stream.
+                controller.error(err);
+              });
+            },
+          });
+
+      // 4. Return the new, fully compliant Web Stream.
+      return new NextResponse(webStream, {
+        headers: {
+          'Content-Type': 'audio/mpeg',
+        },
+      });
+      }
+    } catch(error){
+        return NextResponse.json({error: `Failed to generate speech: ${error}`}, {status: 500});
+    }
 }

@@ -9,11 +9,10 @@ const InterviewSession = async ({ params }: { params: { id: string } }) => {
 
     return (
         <>
-      <div className='flex flex-col gap-4 items-center'>
-        <InterviewClient initialData={interviewData} />
-      </div>
-        
-    </>
+          <div className='flex flex-col gap-4 items-center'>
+            <InterviewClient initialData={interviewData} />
+          </div>
+        </>
     );
 };
 

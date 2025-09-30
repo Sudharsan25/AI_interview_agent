@@ -10,7 +10,7 @@ interface ContentWrapperProps {
 export const ContentWrapper = ({ children, className }: ContentWrapperProps) => {
   return (
     <main className={clsx(
-      "mx-auto max-w-7xl px-12 max-sm:px-4 my-12 max-sm:my-8",
+      "max-w-full px-12 max-sm:px-4 my-12 max-sm:my-8",
       className
     )}>
       {children}

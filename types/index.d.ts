@@ -117,3 +117,13 @@ interface InterviewFormProps {
 interface TechIconProps {
   techStack: string[];
 }
+
+declare global {
+  interface Window {
+    puter: {
+      ai: {
+        txt2speech: (text: string) => Promise<HTMLAudioElement>;
+      };
+    };
+  }
+}

@@ -90,15 +90,15 @@ const InterviewForm = () => {
     };
 
     return (
-        <div className="card-border w-fit">
-            <div className="flex flex-col items-center gap-6 card py-14 px-10">
-                <div className="flex flex-row gap-2 justify-center">
+        <div className="w-2xl">
+            <div className="flex flex-col items-center gap-6 card py-14 px-10 shadow-lg shadow-primary-200/10">
+                <div className="flex flex-row justify-evenly items-center w-full">
                     {/* Assuming /logo.svg exists in your public directory */}
-                    <Image src="/logo.svg" alt="logo" height={32} width={38} />
-                    <h2 className="text-primary-100">Create your interview now</h2>
+                    <Image src="/logo.svg" alt="logo" height={48} width={48} />
+                    <h2 className="text-black">Create your interview now</h2>
                 </div>
 
-                <h3>Provide the required details to simulate your interview!</h3>
+                <p className='text-black font-semibold'>Provide the required details to simulate your interview!</p>
 
                 <Form {...form}>
                     <form
@@ -142,7 +142,7 @@ const InterviewForm = () => {
                             name="length"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>The length of interview</FormLabel>
+                                    <FormLabel className='text-black'>The length of interview</FormLabel>
                                     <Select
                                         onValueChange={(value) => {
                                             if (value === "medium" || value === "long") {
@@ -154,8 +154,8 @@ const InterviewForm = () => {
                                         value={field.value}
                                     >
                                         <FormControl>
-                                            <SelectTrigger className="w-full rounded-2xl min-h-12">
-                                                <SelectValue placeholder="Select an interview length" />
+                                            <SelectTrigger className="w-full rounded-2xl min-h-12 !bg-dark-200">
+                                                <SelectValue placeholder="Select an interview length"/>
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -194,7 +194,7 @@ const InterviewForm = () => {
                             type="text" // Changed to number type for input
                         />
 
-                        <Button className="btn" type="submit">
+                        <Button className="bg-primary text-primary-foreground hover:bg-sidebar-primary/90 rounded-full min-h-12 font-bold w-full" type="submit">
                             Generate an Interview
                         </Button>
                     </form>

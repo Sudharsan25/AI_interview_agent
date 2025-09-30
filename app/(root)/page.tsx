@@ -8,8 +8,10 @@ import InterviewCard from "@/components/InterviewCard";
 import { useEffect, useState } from "react";
 import { Interview } from "@/types";
 import { fetchUserInterviews } from "@/lib/utils";
-import { InterviewListSkeleton } from "@/components/SkeletonInterviewList";
+import { HomePageSkeleton } from "@/components/SkeletonInterviewList";
 import { ContentWrapper } from "@/components/ComponentWrapper";
+import { useSession } from "@/lib/auth-client";
+
 
 // import {
 //   getInterviewsByUserId,
@@ -38,7 +40,7 @@ export default function InterviewList() {
 
   if (isLoading) {
     // 2. Render the skeleton component instead of the old text
-    return <InterviewListSkeleton />;
+    return <HomePageSkeleton />;
   }
 
   if (error) {
@@ -49,7 +51,7 @@ export default function InterviewList() {
     <ContentWrapper>
       <>
       <section className="card-cta">
-        <div className="flex flex-col gap-6 max-w-lg">
+        <div className="flex flex-col items-center justify-center gap-6 max-w-2xl">
           <h2>Welcome to AI interview Agent.</h2>
           <p className="text-lg">
             The purpose of this app is to provide real-interview simulation, with live voice agent and customized interview settings to help you practice for your interviews.
@@ -72,11 +74,11 @@ export default function InterviewList() {
 
       <section className="flex flex-col gap-6 mt-8">
         <h2>Your Interviews</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">  
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
         {interviews.map((interview) => (
-          <InterviewCard 
+          <InterviewCard
             key={interview.userId}
-            interviewId={interview.id} 
+            interviewId={interview.id}
             role={interview.role}
             type = {interview.type}
             level={interview.level}
@@ -87,12 +89,9 @@ export default function InterviewList() {
             companyDetails = {interview.companyDetails}
             />
         ))}
-
-        
         </div>
       </section>
     </>
     </ContentWrapper>
-    
   );
 };

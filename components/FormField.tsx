@@ -23,11 +23,10 @@ const FormFieldCompnent = <T extends FieldValues>({name, control, label, placeho
     name={name}
     control={control}
     render = { ({field}) => (
-    
                   <FormItem>
-                    <FormLabel className='label'>{label}</FormLabel>
+                    <FormLabel className='label text-black'>{label}</FormLabel>
                     <FormControl>
-                      <Input type={type} className="input" placeholder={placeholder} {...field} />
+                      <Input type={type} className="input border border-light-600/30 focus:border-primary-200 focus:ring-1 focus:ring-primary-200/50" placeholder={placeholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
