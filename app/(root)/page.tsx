@@ -10,13 +10,6 @@ import { Interview } from "@/types";
 import { fetchUserInterviews } from "@/lib/utils";
 import { HomePageSkeleton } from "@/components/SkeletonInterviewList";
 import { ContentWrapper } from "@/components/ComponentWrapper";
-import { useSession } from "@/lib/auth-client";
-
-
-// import {
-//   getInterviewsByUserId,
-//   getLatestInterviews,
-// } from "@/lib/actions/general.action";
 
 export default function InterviewList() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -50,48 +43,55 @@ export default function InterviewList() {
   return (
     <ContentWrapper>
       <>
-      <section className="card-cta">
-        <div className="flex flex-col items-center justify-center gap-6 max-w-2xl">
-          <h2>Welcome to AI interview Agent.</h2>
-          <p className="text-lg">
-            The purpose of this app is to provide real-interview simulation, with live voice agent and customized interview settings to help you practice for your interviews.
-            Every interview also has its own feedback. The interview questions and feedbacks are generated in real time using Google AI Studio and Gemini models.
-          </p>
+        <section className="card-cta">
+          <div className="flex flex-col items-center justify-center gap-6 max-w-2xl">
+            <h2 className="text-2xl text-shadow-2xs font-bold">
+              AI Interview Agent
+            </h2>
+            <p className="text-lg">
+              Go beyond flashcards and theory. AI-powered Interivew agent
+              creates a realistic, voice-driven interview experience tailored to
+              your target role. Create a curated set of questions by uploading
+              specific details about the interview and practice your answers in
+              a true-to-life simulation, and build the confidence to ace any
+              interview.
+            </p>
 
-          <Button className="w-full rounded-2xl" variant="outline">
-            <Link href="/interview/create/">Create a new Interview</Link>
-          </Button>
-        </div>
+            <Button className="w-full rounded-2xl" variant="outline">
+              <Link href="/interview/create/">Create a new Interview</Link>
+            </Button>
+          </div>
 
-        <Image
-          src="/robot.png"
-          alt="robo-dude"
-          width={400}
-          height={400}
-          className="max-sm:hidden"
-        />
-      </section>
+          <Image
+            src="/robot.png"
+            alt="robo-dude"
+            width={400}
+            height={400}
+            className="max-sm:hidden"
+          />
+        </section>
 
-      <section className="flex flex-col gap-6 mt-8">
-        <h2>Your Interviews</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
-        {interviews.map((interview) => (
-          <InterviewCard
-            key={interview.userId}
-            interviewId={interview.id}
-            role={interview.role}
-            type = {interview.type}
-            level={interview.level}
-            techstack = {interview.techstack}
-            length={interview.length}
-            createdAt = {interview.createdAt}
-            jobDesc = {interview.jobDesc}
-            companyDetails = {interview.companyDetails}
-            />
-        ))}
-        </div>
-      </section>
-    </>
+        <section className="flex flex-col gap-6 mt-8">
+          <h2>Your Interviews</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+            {interviews.map((interview) => (
+              <InterviewCard
+                key={interview.userId}
+                interviewId={interview.id}
+                role={interview.role}
+                type={interview.type}
+                level={interview.level}
+                techstack={interview.techstack}
+                length={interview.length}
+                createdAt={interview.createdAt}
+                jobDesc={interview.jobDesc}
+                companyDetails={interview.companyDetails}
+                completed={interview.completed}
+              />
+            ))}
+          </div>
+        </section>
+      </>
     </ContentWrapper>
   );
-};
+}

@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 const techIconBaseURL = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 const normalizeTechName = (tech: string) => {
-  const key = tech.toLowerCase().replace(/\.js$/, "").replace(/\s+/g, "");
+  const key = tech.toLowerCase().replace(/[^a-z0-9]/gi, "");
   return mappings[key as keyof typeof mappings];
 };
 
@@ -22,24 +22,17 @@ const checkIconExists = async (url: string) => {
     return false;
   }
 };
+export const getTechLogo = async (techName: string): Promise<string> => {
+  // 1. Normalize the single tech name
+  const normalized = normalizeTechName(techName);
+  // 2. Construct the potential URL for the icon
+  const potentialUrl = `${techIconBaseURL}/${normalized}/${normalized}-original.svg`;
 
-export const getTechLogos = async (techArray: string[]) => {
-  const logoURLs = techArray.map((tech) => {
-    const normalized = normalizeTechName(tech);
-    return {
-      tech,
-      url: `${techIconBaseURL}/${normalized}/${normalized}-original.svg`,
-    };
-  });
+  // 3. Check if the icon actually exists at that URL
+  const iconExists = await checkIconExists(potentialUrl);
 
-  const results = await Promise.all(
-    logoURLs.map(async ({ tech, url }) => ({
-      tech,
-      url: (await checkIconExists(url)) ? url : "/tech.svg",
-    }))
-  );
-
-  return results;
+  // 4. Return the correct URL or the fallback
+  return iconExists ? potentialUrl : "/tech.svg";
 };
 
 export const getRandomInterviewCover = () => {
@@ -48,14 +41,13 @@ export const getRandomInterviewCover = () => {
 };
 
 export async function fetchUserInterviews(): Promise<Interview[]> {
-  const response = await fetch('/api/interview/get-users-interview');
+  const response = await fetch("/api/interview/get-users-interview");
 
   if (!response.ok) {
     // This will activate the nearest `error.js` Error Boundary
-    throw new Error('Failed to fetch interviews');
+    throw new Error("Failed to fetch interviews");
   }
 
   const result = await response.json();
   return result.data;
 }
-

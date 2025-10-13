@@ -22,6 +22,7 @@ export interface Interview {
   techstack: string; // Or string[] if you store it as a JSON array
   length: string;
   jobDesc: string;
+  completed: boolean;
   companyDetails?: string | null;
   specialization?: string | null;
   createdAt: Date; // ISO date string
@@ -48,16 +49,17 @@ interface InterviewCardProps {
   level: string;
   length: string;
   techstack: string;
-  jobDesc: string,
+  jobDesc: string;
   companyDetails?: string | null;
   specialization?: string | null;
   createdAt: Date;
+  completed: boolean;
 }
 
 interface Question {
-  id: string,
-  interviewId: string,
-  questionText: string
+  id: string;
+  interviewId: string;
+  questionText: string;
 }
 
 interface InterviewClientProps {
