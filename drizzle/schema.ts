@@ -53,48 +53,56 @@ export const verification = pgTable("verification", {
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").$defaultFn(
-    () => /* @__PURE__ */ new Date(),
+    () => /* @__PURE__ */ new Date()
   ),
   updatedAt: timestamp("updated_at").$defaultFn(
-    () => /* @__PURE__ */ new Date(),
+    () => /* @__PURE__ */ new Date()
   ),
 });
 
-export const interviews = pgTable("interviews",{
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: text("userId").notNull().references(
-      () => user.id,{onDelete:'cascade'}
-    ),
-    role: text("role").notNull(),
-    level: text("level").notNull(),
-    type: text("type").notNull(),
-    techstack: text("techstack").notNull(),
-    length: text("length").notNull(),
-    jobDesc: text("jobDesc").notNull(),
-    companyDetails: text("companyDetails"),
-    specialization: text("specialization"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-})
+export const interviews = pgTable("interviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  role: text("role").notNull(),
+  level: text("level").notNull(),
+  type: text("type").notNull(),
+  techstack: text("techstack").notNull(),
+  length: text("length").notNull(),
+  jobDesc: text("jobDesc").notNull(),
+  companyDetails: text("companyDetails"),
+  specialization: text("specialization"),
+  completed: boolean().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
 
-export const questions = pgTable("questions",{
-    id: uuid("id").primaryKey().defaultRandom(), // Use uuid for the primary key
-    interviewId: uuid("interviewId").notNull().references(
-      ()=> interviews.id, {onDelete: "cascade"},
-    ),
-    questionText: text("questionText").notNull(),
-})
+export const questions = pgTable("questions", {
+  id: uuid("id").primaryKey().defaultRandom(), // Use uuid for the primary key
+  interviewId: uuid("interviewId")
+    .notNull()
+    .references(() => interviews.id, { onDelete: "cascade" }),
+  questionText: text("questionText").notNull(),
+});
 
 export const transcripts = pgTable("transcripts", {
   id: uuid("id").primaryKey().defaultRandom(),
   // Foreign key linking to the 'questions' table.
   // 'unique()' ensures a one-to-one relationship (one transcript per question).
-  questionId: uuid("questionId").notNull().unique().references(
-    () => questions.id, { onDelete: "cascade" }
-  ),
+  questionId: uuid("questionId")
+    .notNull()
+    .unique()
+    .references(() => questions.id, { onDelete: "cascade" }),
   transcript: text("transcript").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const schema = {
-    user, account, session, verification, interviews, questions, transcripts
-}
+  user,
+  account,
+  session,
+  verification,
+  interviews,
+  questions,
+  transcripts,
+};
