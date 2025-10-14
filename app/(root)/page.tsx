@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
 import InterviewCard from "@/components/InterviewCard";
 import { useEffect, useState } from "react";
 import { Interview } from "@/types";
@@ -56,10 +54,6 @@ export default function InterviewList() {
               a true-to-life simulation, and build the confidence to ace any
               interview.
             </p>
-
-            <Button className="w-full rounded-2xl" variant="outline">
-              <Link href="/interview/create/">Create a new Interview</Link>
-            </Button>
           </div>
 
           <Image
@@ -72,7 +66,7 @@ export default function InterviewList() {
         </section>
 
         <section className="flex flex-col gap-6 mt-8">
-          <h2>Your Interviews</h2>
+          <h3>All Interviews</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
             {interviews.map((interview) => (
               <InterviewCard

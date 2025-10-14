@@ -1,31 +1,31 @@
 import React from "react";
 import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { InterviewCardProps } from "@/types";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { TechLogo } from "./TechLogo";
+import {
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 // A helper component for consistent styling
 const DetailRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="grid grid-cols-3 items-center gap-4">
-    <span className="text-sm font-medium text-muted-foreground">{label}</span>
-    <span className="col-span-2 text-sm">{value}</span>
+  <div className="grid grid-cols-2 items-center">
+    <span className="text-sm font-medium text-muted-foreground col-span-1">
+      {label}
+    </span>
+    <span className="col-span-1 text-sm">{value}</span>
   </div>
 );
 
 const InterviewCard = ({
   interviewId,
   role,
-  type,
   length,
   level,
   techstack,
@@ -33,7 +33,14 @@ const InterviewCard = ({
   companyDetails,
   specialization,
 }: InterviewCardProps) => {
-  const techArray = techstack.split(",").map((t) => t.trim());
+  const techArray = techstack.split(",").map((t) => {
+    // First, trim whitespace and remove quotes
+    const cleanedTech = t.trim().replace(/^"|"$/g, "");
+
+    // Then, capitalize the first letter and add the rest of the string
+    if (cleanedTech.length === 0) return ""; // Handle empty strings
+    return cleanedTech.charAt(0).toUpperCase() + cleanedTech.slice(1);
+  });
   const primaryTech = techArray[0];
 
   return (
@@ -45,15 +52,30 @@ const InterviewCard = ({
               <TechLogo techName={primaryTech} />
               <p className="capitalize text-2xl">{role} Interview</p>
             </div>
-            <div className="flex items-start justify-around gap-4 text-lg text-muted-foreground">
-              <p className="captialize text-sm py-2">
-                Experience level: {level}
-              </p>
-              <p className="captialize text-sm py-2">
-                Interview length: {length}
-              </p>
-            </div>
+            <div className="grid gap-4 py-2">
+              {/* Conditionally render optional fields */}
+              <DetailRow label="Required experience" value={`${level} level`} />
+              <DetailRow label="Length of Interview" value={length} />
+              {specialization && (
+                <DetailRow label="Specialization" value={specialization} />
+              )}
+              {companyDetails && (
+                <div className="grid gap-2">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Company Details
+                  </span>
+                  <p className="text-sm text-foreground">{companyDetails}</p>
+                </div>
+              )}
 
+              {/* Description */}
+              <div className="grid gap-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Job Description Focus
+                </span>
+                <p className="text-sm text-foreground">{jobDesc}</p>
+              </div>
+            </div>
             <div className="grid gap-2">
               <span className="text-sm font-medium text-muted-foreground">
                 Technologies:{" "}
@@ -68,55 +90,41 @@ const InterviewCard = ({
             </div>
           </div>
         </div>
-
         <div className="flex flex-row justify-around gap-2">
           <Dialog>
             <DialogTrigger asChild>
               <Button className="w-fit rounded-2xl" variant="outline">
-                More Details
+                Start Interview
               </Button>
             </DialogTrigger>
+
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>{role}</DialogTitle>
-                <DialogDescription>Type: {type}.</DialogDescription>
+                <DialogTitle>
+                  <p className="capitalize text-2xl">{role} Interview</p>
+                </DialogTitle>
               </DialogHeader>
-
               <div className="grid gap-4 py-4">
-                {/* Conditionally render optional fields */}
-                {specialization && (
-                  <DetailRow label="Specialization" value={specialization} />
-                )}
-                {companyDetails && (
-                  <DetailRow label="Company Details" value={companyDetails} />
-                )}
-
-                {/* Description */}
-                <div className="grid gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Job Description Focus
-                  </span>
-                  <p className="text-sm text-foreground">{jobDesc}</p>
-                </div>
+                <p className="text-white text-center">
+                  You are about the start the interview. You can not exit the
+                  application until the interview is completed. Do you want to
+                  proceed.
+                </p>
               </div>
 
-              <DialogFooter className="sm:justify-between">
+              <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Close
-                  </Button>
+                  <Link href={`/interview/${interviewId}`}>
+                    <Button
+                      className="rounded-2xl w-full text-center"
+                      variant="outline">
+                      Start Interview
+                    </Button>
+                  </Link>
                 </DialogClose>
-                <Link href={`/interview/${interviewId}`}>
-                  <Button type="button">Start Interview</Button>
-                </Link>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          <Link href={`/interview/${interviewId}`}>
-            <Button className="rounded-2xl" variant="outline">
-              Start Interview
-            </Button>
-          </Link>
         </div>
       </div>
     </div>
