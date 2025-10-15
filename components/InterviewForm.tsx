@@ -110,13 +110,7 @@ const InterviewForm = () => {
 
       const result = await response.json();
       console.log("API Response:", result);
-      // Here you can handle the successful response from your API,
-      // e.g., redirect the user, display a success message, etc.
-      alert(
-        `Interview generated successfully! Interview ID: ${
-          result.interviewId || "N/A"
-        }`
-      );
+      toast("Interview created successfully!!");
       router.push("/");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

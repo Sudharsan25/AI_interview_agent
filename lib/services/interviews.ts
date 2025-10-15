@@ -1,17 +1,29 @@
 import { db } from "@/drizzle/db";
-import { interviews } from "@/drizzle/schema";
+import { interviews, questions } from "@/drizzle/schema";
 import { and, eq } from "drizzle-orm";
 
 // Type for creating a new interview (you can customize this)
 type NewInterview = typeof interviews.$inferInsert;
 
 // --- READ OPERATIONS ---
+/**
+ * Fetches all questions associated with a specific interview ID.
+ * @param interviewId The ID of the interview.
+ * @returns A promise that resolves to an array of question objects.
+ */
+export async function getQuestionsByInterviewId(interviewId: string) {
+  return await db
+    .select()
+    .from(questions)
+    .where(eq(questions.interviewId, interviewId));
+}
 
 /**
  * Fetches all interviews for a specific user.
  * @param userId - The ID of the user.
  * @returns A promise that resolves to an array of interviews.
  */
+
 export async function getInterviewsByUserId(userId: string) {
   return await db
     .select()
