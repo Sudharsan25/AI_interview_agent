@@ -60,7 +60,9 @@ const InterviewClient = ({ initialData }: InterviewClientProps) => {
     if (nextIndex < questions.length) {
       setCurrentQuestionIndex(nextIndex);
       const nextQuestionText = questions[nextIndex].questionText;
-      setAgentTranscript(nextQuestionText);
+      setAgentTranscript(
+        "Question " + (nextIndex + 1) + ": " + nextQuestionText
+      );
       playAgentAudio(nextQuestionText); // This will trigger startListening() onEnd
     } else {
       setAgentTranscript(
@@ -99,25 +101,6 @@ const InterviewClient = ({ initialData }: InterviewClientProps) => {
 
   return (
     <div className="flex h-fit w-full text-foreground">
-      <aside className="w-64 flex-col border-r bg-muted/60 ml-8 mt-8 p-6 hidden md:flex">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">Questions</h2>
-        </div>
-        <nav className="flex flex-col gap-2">
-          {questions.map((question, index) => (
-            <Button
-              key={question.id}
-              variant="ghost"
-              className={clsx("justify-start text-left", {
-                "bg-accent text-accent-foreground":
-                  index === currentQuestionIndex,
-              })}>
-              {`Question ${index + 1}`}
-            </Button>
-          ))}
-        </nav>
-      </aside>
-
       <main className="flex flex-1 flex-col p-4 md:p-8 min-h-[800]">
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 ">
           <Card

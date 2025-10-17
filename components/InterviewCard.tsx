@@ -32,6 +32,7 @@ const InterviewCard = ({
   jobDesc,
   companyDetails,
   specialization,
+  completed,
 }: InterviewCardProps) => {
   const techArray = techstack.split(",").map((t) => {
     // First, trim whitespace and remove quotes
@@ -91,40 +92,46 @@ const InterviewCard = ({
           </div>
         </div>
         <div className="flex flex-row justify-around gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="w-fit rounded-2xl" variant="outline">
-                Start Interview
-              </Button>
-            </DialogTrigger>
+          {completed ? (
+            <span className="text-white text-lg font-bold text-center my-4">
+              Interview Completed
+            </span>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-fit rounded-2xl" variant="outline">
+                  Start Interview
+                </Button>
+              </DialogTrigger>
 
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>
-                  <p className="capitalize text-2xl">{role} Interview</p>
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <p className="text-white text-center">
-                  You are about the start the interview. You can not exit the
-                  application until the interview is completed. Do you want to
-                  proceed.
-                </p>
-              </div>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>
+                    <p className="capitalize text-2xl">{role} Interview</p>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <p className="text-white text-center">
+                    You are about the start the interview. You can not exit the
+                    application until the interview is completed. Do you want to
+                    proceed.
+                  </p>
+                </div>
 
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Link href={`/interview/${interviewId}`}>
-                    <Button
-                      className="rounded-2xl w-full text-center"
-                      variant="outline">
-                      Start Interview
-                    </Button>
-                  </Link>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Link href={`/interview-start/${interviewId}`}>
+                      <Button
+                        className="rounded-2xl w-full text-center"
+                        variant="outline">
+                        Start Interview
+                      </Button>
+                    </Link>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
     </div>
