@@ -58,7 +58,7 @@ export function LoginForm({
 
     if (success == true) {
       toast.success(message);
-      router.push("/");
+      router.push("/home");
     } else {
       toast.error(message);
     }

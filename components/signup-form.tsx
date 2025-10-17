@@ -26,7 +26,7 @@ const authClient = createAuthClient();
 const signInWithGoogle = async () => {
   const data = await authClient.signIn.social({
     provider: "google",
-    callbackURL: "/",
+    callbackURL: "/home",
   });
 
   return data;
@@ -64,7 +64,7 @@ export function SignUpForm({
 
     if (success == true) {
       toast.success(message);
-      router.push("/");
+      router.push("/home");
     } else {
       toast.error(message);
     }

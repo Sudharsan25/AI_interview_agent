@@ -5,11 +5,10 @@ import Image from "next/image";
 import InterviewCard from "@/components/InterviewCard";
 import { useEffect, useState } from "react";
 import { Interview } from "@/types";
-import { fetchUserInterviews } from "@/lib/utils";
 import { HomePageSkeleton } from "@/components/SkeletonInterviewList";
 import { ContentWrapper } from "@/components/ComponentWrapper";
 
-export default function InterviewList() {
+export default function Home() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,8 +16,16 @@ export default function InterviewList() {
   useEffect(() => {
     const loadInterviews = async () => {
       try {
-        const data = await fetchUserInterviews();
-        setInterviews(data);
+        // --- THIS IS THE CHANGE ---
+        const response = await fetch("/api/interview/user-interview");
+        if (!response.ok) {
+          throw new Error("Failed to fetch interviews.");
+        }
+        const result = await response.json();
+        if (result.success) {
+          setInterviews(result.data);
+        }
+        // --- END OF CHANGE ---
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -98,7 +105,7 @@ export default function InterviewList() {
             ) : (
               interviews.map((interview) => (
                 <InterviewCard
-                  key={interview.userId}
+                  key={interview.id}
                   interviewId={interview.id}
                   role={interview.role}
                   type={interview.type}
