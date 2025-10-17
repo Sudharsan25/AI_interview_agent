@@ -4,9 +4,18 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true, //important to avoid build failure during deployment
   },
-  typescript:{
+  typescript: {
     ignoreBuildErrors: true,
-  }
+  },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/home",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
