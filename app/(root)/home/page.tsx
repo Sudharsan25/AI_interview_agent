@@ -54,7 +54,7 @@ export default function Home() {
               AI Interview Agent
             </h2>
             <p className="text-lg">
-              Go beyond flashcards and theory. AI-powered Interivew agent
+              Go beyond flashcards and theory. AI-powered Interview agent
               creates a realistic, voice-driven interview experience tailored to
               your target role. Create a curated set of questions by uploading
               specific details about the interview and practice your answers in
