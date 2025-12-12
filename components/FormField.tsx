@@ -30,16 +30,16 @@ const FormFieldCompnent = <T extends FieldValues>({
       control={control}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="label text-white">{label}</FormLabel>
+          <FormLabel className="text-neutral-300 font-medium">{label}</FormLabel>
           <FormControl>
             <Input
               type={type}
-              className="input border border-light-600/30 focus:border-primary-200 focus:ring-1 focus:ring-primary-200/50"
+              className="h-12 rounded-xl bg-neutral-800 border-white/10 text-white placeholder:text-neutral-500 focus:border-blue-500/50 focus:ring-blue-500/20 transition-all"
               placeholder={placeholder}
               {...field}
             />
           </FormControl>
-          <FormMessage />
+          <FormMessage className="text-red-400" />
         </FormItem>
       )}
     />

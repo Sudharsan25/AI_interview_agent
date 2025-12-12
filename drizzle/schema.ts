@@ -73,6 +73,7 @@ export const interviews = pgTable("interviews", {
   jobDesc: text("jobDesc").notNull(),
   companyDetails: text("companyDetails"),
   specialization: text("specialization"),
+  resumeDetails: text("resumeDetails"),
   completed: boolean().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

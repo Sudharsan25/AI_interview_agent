@@ -24,6 +24,8 @@ import {
 } from "./ui/select";
 import { toast } from "sonner";
 
+import { Textarea } from "@/components/ui/textarea";
+
 const interviewSchema = () => {
   return z.object({
     role: z.string().min(1, { message: "Role cannot be empty." }),
@@ -36,6 +38,7 @@ const interviewSchema = () => {
     jobDesc: z.string().min(8),
     companyDetails: z.string().optional(),
     specialization: z.string().optional(),
+    resumeDetails: z.string().optional(),
   });
 };
 
@@ -52,6 +55,7 @@ const InterviewForm = () => {
       companyDetails: "",
       specialization: "",
       jobDesc: "",
+      resumeDetails: "",
     },
   });
   const router = useRouter();
@@ -67,6 +71,7 @@ const InterviewForm = () => {
       companyDetails,
       specialization,
       jobDesc,
+      resumeDetails,
     } = data; // Destructure amount
 
     console.log("Submitted data:", {
@@ -78,6 +83,7 @@ const InterviewForm = () => {
       companyDetails,
       specialization,
       jobDesc,
+      resumeDetails,
     });
 
     try {
@@ -95,6 +101,7 @@ const InterviewForm = () => {
           jobDesc,
           companyDetails,
           specialization,
+          resumeDetails,
           completed: false,
         }),
       });
@@ -122,124 +129,162 @@ const InterviewForm = () => {
   };
 
   return (
-    <div className="w-2xl">
-      <div className="flex flex-col items-center gap-6 card py-14 px-10 shadow-sm shadow-primary-200/10 bg-gray-900/25">
-        <div className="flex flex-row justify-evenly items-center w-full">
-          <h2 className="text-white">Create your interview now</h2>
+    <div className="w-full max-w-2xl mx-auto">
+      <div className="relative group">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl opacity-10 blur-sm transition duration-500 group-hover:opacity-25"></div>
+        <div className="relative flex flex-col items-center gap-8 p-8 md:p-12 bg-neutral-900 rounded-3xl border border-white/10 shadow-2xl">
+          
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold text-white tracking-tight">
+              Create New Interview
+            </h2>
+            <p className="text-neutral-400 max-w-md mx-auto">
+              Configure your AI interview session. Provide the details below to generate a tailored experience.
+            </p>
+          </div>
+
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full space-y-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormFieldCompnent
+                  control={form.control}
+                  name="role"
+                  label="Role"
+                  placeholder="e.g. Senior Frontend Engineer"
+                  type="text"
+                />
+
+                <FormFieldCompnent
+                  control={form.control}
+                  name="level"
+                  label="Experience Level"
+                  placeholder="e.g. Senior, Mid-level"
+                  type="text"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <FormFieldCompnent
+                  control={form.control}
+                  name="type"
+                  label="Interview Type"
+                  placeholder="e.g. System Design, Behavioral"
+                  type="text"
+                />
+
+                <FormFieldCompnent
+                  control={form.control}
+                  name="techstack"
+                  label="Tech Stack"
+                  placeholder="e.g. React, Node.js, AWS"
+                  type="text"
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="length"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-neutral-300 font-medium">
+                      Interview Duration
+                    </FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        if (value === "medium" || value === "long") {
+                          toast.info(
+                            "Beta limitation: Only short interviews are available currently."
+                          );
+                        } else {
+                          field.onChange(value);
+                        }
+                      }}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full h-12 rounded-xl bg-neutral-800 border-white/10 text-white focus:ring-blue-500/50 focus:ring-offset-0">
+                          <SelectValue placeholder="Select duration" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-neutral-900 border-white/10 text-white">
+                        <SelectItem className="focus:bg-white/10 cursor-pointer" value="short">
+                          Short (15 mins)
+                        </SelectItem>
+                        <SelectItem className="focus:bg-white/10 cursor-pointer opacity-50" value="medium" disabled>
+                          Medium (30 mins) - Coming Soon
+                        </SelectItem>
+                        <SelectItem className="focus:bg-white/10 cursor-pointer opacity-50" value="long" disabled>
+                          Long (60 mins) - Coming Soon
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-red-400" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-6 pt-2">
+                <FormFieldCompnent
+                  control={form.control}
+                  name="jobDesc"
+                  label="Job Description Focus"
+                  placeholder="Paste key requirements or responsibilities..."
+                  type="text"
+                />
+
+                <FormField
+                  control={form.control}
+                  name="resumeDetails"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-neutral-300 font-medium">
+                        Resume Details (Optional)
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Paste your resume details (projects, experience, skills)..."
+                          className="min-h-[120px] rounded-xl bg-neutral-800 border-white/10 text-white placeholder:text-neutral-500 focus:border-blue-500/50 focus:ring-blue-500/20 transition-all resize-y"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormFieldCompnent
+                    control={form.control}
+                    name="specialization"
+                    label="Specialization (Optional)"
+                    placeholder="e.g. Platform, UI/UX"
+                    type="text"
+                  />
+
+                  <FormFieldCompnent
+                    control={form.control}
+                    name="companyDetails"
+                    label="Company Context (Optional)"
+                    placeholder="e.g. Fintech startup, fast-paced"
+                    type="text"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <Button
+                  className="w-full h-14 text-lg font-semibold rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-900/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  type="submit"
+                >
+                  Generate Interview Session
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
-
-        <p className="text-white font-semibold">
-          Provide the required details to simulate your interview!
-        </p>
-
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-6 mt-4 form">
-            <FormFieldCompnent
-              control={form.control}
-              name="role"
-              label="Role"
-              placeholder="Interview/Job role"
-              type="text"
-            />
-
-            <FormFieldCompnent
-              control={form.control}
-              name="type"
-              label="Type"
-              placeholder="Technical, Behavioural or Screening..."
-              type="text"
-            />
-
-            <FormFieldCompnent
-              control={form.control}
-              name="level"
-              label="Experience Level"
-              placeholder="Entry, Mid, Senior..."
-              type="text"
-            />
-
-            <FormFieldCompnent
-              control={form.control}
-              name="techstack"
-              label="Skills/Technologies"
-              placeholder="e.g., React, Node.js, Python..."
-              type="text"
-            />
-
-            <FormField
-              control={form.control}
-              name="length"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-black">
-                    The length of interview
-                  </FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      if (value === "medium" || value === "long") {
-                        toast(
-                          "This is a beta version using free resources, so usage is restricted to short interviews only. We apologize for the inconvenience."
-                        );
-                      } else {
-                        field.onChange(value); // Only update form for 'short'
-                      }
-                    }}
-                    value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full rounded-2xl min-h-12 !bg-dark-200">
-                        <SelectValue placeholder="Select an interview length" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem className="rounded-2xl" value="short">
-                        Short
-                      </SelectItem>
-                      <SelectItem className="rounded-2xl" value="medium">
-                        Medium (Coming Soon)
-                      </SelectItem>
-                      <SelectItem className="rounded-2xl" value="long">
-                        Long (Coming Soon)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormFieldCompnent
-              control={form.control}
-              name="jobDesc"
-              label="Job Description"
-              placeholder="Skills or responsibilities specific to the Job description"
-              type="text" // Changed to number type for input
-            />
-
-            <FormFieldCompnent
-              control={form.control}
-              name="specialization"
-              label="Specialization of the role (If Applicable)"
-              placeholder="Any specific domain or team"
-              type="text" // Changed to number type for input
-            />
-
-            <FormFieldCompnent
-              control={form.control}
-              name="companyDetails"
-              label="Details about the company (Optional)"
-              placeholder="Company Name, Vision, Mission and Principles followed"
-              type="text" // Changed to number type for input
-            />
-
-            <Button
-              className="bg-primary text-primary-foreground hover:bg-sidebar-primary/90 rounded-full min-h-12 font-bold w-full"
-              type="submit">
-              Generate an Interview
-            </Button>
-          </form>
-        </Form>
       </div>
     </div>
   );

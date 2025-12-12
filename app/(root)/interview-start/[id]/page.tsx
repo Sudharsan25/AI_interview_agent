@@ -10,11 +10,6 @@ const InterviewSession = async ({ params }: { params: { id: string } }) => {
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="flex items-center justify-center pt-12 pb-8">
-          <span className="text-lg text-white font-bold">
-            Interview for {interviewData.details.role} Role
-          </span>
-        </div>
         <InterviewClient initialData={interviewData} />
       </div>
     </>

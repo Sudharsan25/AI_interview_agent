@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React, { ReactNode } from "react";
 
+import Navbar from "@/components/Navbar";
+
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -14,8 +16,9 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="root-layout">
-      <div className="flex-1">{children}</div>
+    <div className="root-layout bg-neutral-950 min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex-1 w-full">{children}</div>
     </div>
   );
 };

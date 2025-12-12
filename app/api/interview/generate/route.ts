@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     jobDesc,
     companyDetails,
     specialization,
+    resumeDetails,
   } = await request.json();
 
   try {
@@ -102,6 +103,10 @@ export async function POST(request: NextRequest) {
       prompt += `\nPlease tailor some questions towards this specialization: ${specialization}.`;
     }
 
+    if (resumeDetails) {
+      prompt += `\nThe candidate has provided the following resume details (projects, experience, skills). Please tailor the questions to relate to their background where appropriate:\n${resumeDetails}`;
+    }
+
     // Finally, add the formatting instructions at the end
     prompt += `\n
             Please return only the questions, without any additional text or conversational filler.
@@ -111,7 +116,7 @@ export async function POST(request: NextRequest) {
             Ensure there are exactly ${numberOfQuestions} questions.`;
 
     const result = await generateText({
-      model: google("gemini-2.0-flash-001"), // Using gemini-2.0-flash-001 as per your original code
+      model: google("gemini-2.5-flash"),
       prompt: prompt,
     });
 
@@ -127,6 +132,7 @@ export async function POST(request: NextRequest) {
       jobDesc,
       companyDetails,
       specialization,
+      resumeDetails,
     };
 
     let questionsArray: string[];

@@ -1,12 +1,12 @@
 "use client";
-
 import Image from "next/image";
-
 import InterviewCard from "@/components/InterviewCard";
 import { useEffect, useState } from "react";
 import { Interview } from "@/types";
 import { HomePageSkeleton } from "@/components/SkeletonInterviewList";
-import { ContentWrapper } from "@/components/ComponentWrapper";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus, Sparkles } from "lucide-react";
 
 export default function Home() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -16,7 +16,6 @@ export default function Home() {
   useEffect(() => {
     const loadInterviews = async () => {
       try {
-        // --- THIS IS THE CHANGE ---
         const response = await fetch("/api/interview/user-interview");
         if (!response.ok) {
           throw new Error("Failed to fetch interviews.");
@@ -25,7 +24,6 @@ export default function Home() {
         if (result.success) {
           setInterviews(result.data);
         }
-        // --- END OF CHANGE ---
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -37,75 +35,105 @@ export default function Home() {
   }, []);
 
   if (isLoading) {
-    // 2. Render the skeleton component instead of the old text
     return <HomePageSkeleton />;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] text-red-400">
+        Error: {error}
+      </div>
+    );
   }
 
   return (
-    <ContentWrapper>
-      <>
-        <section className="card-cta">
-          <div className="flex flex-col items-center justify-center gap-6 max-w-2xl">
-            <h2 className="text-2xl text-shadow-2xs font-bold">
-              AI Interview Agent
-            </h2>
-            <p className="text-lg">
-              Go beyond flashcards and theory. AI-powered Interview agent
-              creates a realistic, voice-driven interview experience tailored to
-              your target role. Create a curated set of questions by uploading
-              specific details about the interview and practice your answers in
-              a true-to-life simulation, and build the confidence to ace any
-              interview.
-            </p>
-          </div>
-
-          <Image
-            src="/robot.png"
-            alt="robo-dude"
-            width={400}
-            height={400}
-            className="max-sm:hidden"
-          />
-        </section>
-
-        <section className="flex flex-col gap-6 mt-8">
-          <h3>All Interviews</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
-            {interviews.length === 0 ? (
-              // 2. Use a more descriptive and actionable empty state component
-              <div className="col-span-full flex flex-col items-center justify-center text-center p-12">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-muted-foreground">
-                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="12" x2="12" y1="18" y2="12" />
-                  <line x1="9" x2="15" y1="15" y2="15" />
-                </svg>
-                <h3 className="text-xl font-semibold mt-4 text-white">
-                  No Interviews Created Yet
-                </h3>
-                <p className="text-muted-foreground mt-2 max-w-sm">
-                  It looks like you&apos;re ready for a new challenge. Create
-                  your first AI-powered interview to start practicing.
-                </p>
+    <div className="min-h-screen bg-neutral-950 text-white selection:bg-blue-500/30">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-20 pb-32 px-6">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-neutral-950/0 to-neutral-950/0 pointer-events-none" />
+        
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            
+            {/* Text Content */}
+            <div className="flex-1 text-center lg:text-left space-y-8">
+              <div className="space-y-4">
+                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
+                    <Sparkles className="w-4 h-4" />
+                    <span>AI-Powered Interview Practice</span>
+                 </div>
+                 <h1 className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+                    Ace Your <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                      Interview
+                    </span>
+                 </h1>
+                 <p className="text-lg text-neutral-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    Experience realistic, voice-driven technical interviews tailored to your role. 
+                    Practice with our personal Interview agent and build the confidence to ace your next interview.
+                 </p>
               </div>
-            ) : (
-              interviews.map((interview) => (
+
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                <Link href="/interview/create">
+                  <Button size="lg" className="h-14 px-8 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-lg shadow-lg shadow-blue-900/20 transition-all hover:scale-105">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Start New Interview
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Hero Image / Visual */}
+            <div className="flex-1 relative w-full max-w-[500px] lg:max-w-none">
+               <div className="relative aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden">
+                  <Image
+                    src="/background.jpg"
+                    alt="AI Interview Agent"
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-700"
+                    priority
+                  />
+               </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Interview List Section */}
+      <section className="container mx-auto max-w-7xl px-6 pb-20">
+        <div className="flex items-center justify-between mb-10">
+           <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              Your Interviews
+              <span className="px-2.5 py-0.5 rounded-full bg-neutral-800 text-neutral-400 text-sm font-medium">
+                {interviews.length}
+              </span>
+           </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {interviews.length === 0 ? (
+            <div className="col-span-full py-20 flex flex-col items-center justify-center text-center bg-neutral-900/30 border border-white/5 rounded-3xl border-dashed">
+              <div className="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center mb-6">
+                 <Plus className="w-8 h-8 text-neutral-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No Interviews Yet
+              </h3>
+              <p className="text-neutral-400 max-w-md mb-8">
+                You haven't created any interviews yet. Start your first session to begin practicing.
+              </p>
+              <Link href="/dashboard">
+                <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white">
+                  Create Interview
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            interviews.map((interview) => (
+              <div key={interview.id} className="h-[420px]">
                 <InterviewCard
-                  key={interview.id}
                   interviewId={interview.id}
                   role={interview.role}
                   type={interview.type}
@@ -117,11 +145,11 @@ export default function Home() {
                   companyDetails={interview.companyDetails}
                   completed={interview.completed}
                 />
-              ))
-            )}
-          </div>
-        </section>
-      </>
-    </ContentWrapper>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
