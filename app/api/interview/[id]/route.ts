@@ -1,7 +1,8 @@
 // In app/api/interview/[id]/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { getQuestionsByInterviewId } from "@/lib/services/interviews"; // Import the new service function
+import { getQuestionsByInterviewId } from "@/lib/services";
+import { NotFoundError, ValidationError, toApiError } from "@/lib/errors";
 
 export async function GET(
   request: NextRequest,
@@ -11,21 +12,15 @@ export async function GET(
     // Correctly get the interviewId from the params object.
     const { id: interviewId } = params;
 
-    if (!interviewId) {
-      return NextResponse.json(
-        { message: "Interview ID is required." },
-        { status: 400 }
-      );
+    if (!interviewId || typeof interviewId !== "string") {
+      throw new ValidationError("Interview ID is required");
     }
 
     // Call the centralized service function to fetch the data
     const fetchedQuestions = await getQuestionsByInterviewId(interviewId);
 
     if (fetchedQuestions.length === 0) {
-      return NextResponse.json(
-        { message: "No questions found for this interview ID." },
-        { status: 404 }
-      );
+      throw new NotFoundError("No questions found for this interview ID");
     }
 
     return NextResponse.json(
@@ -34,9 +29,14 @@ export async function GET(
     );
   } catch (error) {
     console.error("Error fetching interview questions:", error);
+    const apiError = toApiError(error);
     return NextResponse.json(
-      { success: false, message: error || "Internal Server Error" },
-      { status: 500 }
+      {
+        success: false,
+        message: apiError.message,
+        code: apiError.code,
+      },
+      { status: apiError.statusCode }
     );
   }
 }

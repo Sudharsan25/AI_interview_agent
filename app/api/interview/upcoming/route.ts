@@ -1,9 +1,10 @@
 // in app/api/upcoming/route.ts
 
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth"; // Your authentication helper
+import { auth } from "@/lib/config";
 import { headers } from "next/headers";
-import { getUpcomingInterviewsByUserId } from "@/lib/services/interviews"; // Your database service function
+import { getUpcomingInterviewsByUserId } from "@/lib/services";
+import { AuthenticationError, toApiError } from "@/lib/errors";
 
 export async function GET() {
   try {
@@ -13,7 +14,7 @@ export async function GET() {
 
     // 2. If no user is authenticated, return an unauthorized error
     if (!userId) {
-      return NextResponse.json({ message: "Not authorized" }, { status: 401 });
+      throw new AuthenticationError("Authentication required");
     }
 
     // 3. Call your centralized service function to fetch the data
@@ -26,9 +27,14 @@ export async function GET() {
     );
   } catch (error) {
     console.error("Error fetching upcoming interviews:", error);
+    const apiError = toApiError(error);
     return NextResponse.json(
-      { success: false, message: "An unexpected error occurred." },
-      { status: 500 }
+      {
+        success: false,
+        message: apiError.message,
+        code: apiError.code,
+      },
+      { status: apiError.statusCode }
     );
   }
 }

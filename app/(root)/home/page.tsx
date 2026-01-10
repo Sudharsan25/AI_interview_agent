@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
-import InterviewCard from "@/components/InterviewCard";
+import { InterviewCard, HomePageSkeleton } from "@/components/features/interview";
 import { useEffect, useState } from "react";
 import { Interview } from "@/types";
-import { HomePageSkeleton } from "@/components/SkeletonInterviewList";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import Link from "next/link";
 import { Plus, Sparkles } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
 
 export default function Home() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -16,16 +16,12 @@ export default function Home() {
   useEffect(() => {
     const loadInterviews = async () => {
       try {
-        const response = await fetch("/api/interview/user-interview");
-        if (!response.ok) {
-          throw new Error("Failed to fetch interviews.");
-        }
-        const result = await response.json();
-        if (result.success) {
-          setInterviews(result.data);
+        const result = await apiClient.getUserInterviews();
+        if (result.success && result.data) {
+          setInterviews(result.data as Interview[]);
         }
       } catch (err) {
-        setError((err as Error).message);
+        setError(err instanceof Error ? err.message : "Failed to fetch interviews.");
       } finally {
         setIsLoading(false);
       }
@@ -62,21 +58,21 @@ export default function Home() {
                     <Sparkles className="w-4 h-4" />
                     <span>AI-Powered Interview Practice</span>
                  </div>
-                 <h1 className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+                 <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
                     Ace Your <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                       Interview
                     </span>
                  </h1>
-                 <p className="text-lg text-neutral-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                 <p className="text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                     Experience realistic, voice-driven technical interviews tailored to your role. 
                     Practice with our personal Interview agent and build the confidence to ace your next interview.
                  </p>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                <Link href="/interview/create">
-                  <Button size="lg" className="h-14 px-8 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-lg shadow-lg shadow-blue-900/20 transition-all hover:scale-105">
+                <Link href="/interview/create" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto min-h-[44px] h-12 sm:h-14 px-6 sm:px-8 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-base sm:text-lg shadow-lg shadow-blue-900/20 transition-all hover:scale-105">
                     <Plus className="w-5 h-5 mr-2" />
                     Start New Interview
                   </Button>

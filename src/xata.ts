@@ -30,7 +30,18 @@ export class XataClient extends DatabaseClient<DatabaseSchema> {
 
 let instance: XataClient | undefined = undefined;
 
+/**
+ * Get Xata client instance - Server-side only
+ * This should NEVER be called from client components
+ */
 export const getXataClient = () => {
+  // Ensure we're on the server side
+  if (typeof window !== 'undefined') {
+    throw new Error(
+      'Xata client cannot be used in the browser. Use API routes or server actions instead.'
+    );
+  }
+
   if (instance) return instance;
 
   instance = new XataClient();

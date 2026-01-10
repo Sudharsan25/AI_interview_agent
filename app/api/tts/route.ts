@@ -3,6 +3,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import {PollyClient, SynthesizeSpeechCommand} from "@aws-sdk/client-polly"
 import { Readable } from "stream";
+import { ttsRequestSchema } from "@/lib/validation/api-schemas";
+import { ValidationError, InternalServerError, toApiError } from "@/lib/errors";
 
 const pollyCilent = new PollyClient({
     region: "us-east-1",
@@ -14,11 +16,17 @@ const pollyCilent = new PollyClient({
 
 export async function POST(request: NextRequest){
     try{
-        const {text} = await request.json();
+        const body = await request.json();
 
-         if (!text) {
-      return NextResponse.json({ message: 'Text is required.' }, { status: 400 });
-    }
+        // Validate request body
+        const validationResult = ttsRequestSchema.safeParse(body);
+        if (!validationResult.success) {
+            throw new ValidationError(
+                validationResult.error.errors[0]?.message || "Invalid request data"
+            );
+        }
+
+        const { text } = validationResult.data;
 
         const command = new SynthesizeSpeechCommand({
             OutputFormat: "mp3",
@@ -30,7 +38,9 @@ export async function POST(request: NextRequest){
         const response = await pollyCilent.send(command);
 
         if(!response.AudioStream){
-            return NextResponse.json({error: `No audio stream received from Polly: ${response.$metadata}`}, {status: 500});
+            throw new InternalServerError(
+                `No audio stream received from Polly: ${JSON.stringify(response.$metadata)}`
+            );
         }
 
         // 1. Check if the AudioStream from AWS is a valid Node.js Readable stream.
@@ -64,6 +74,14 @@ export async function POST(request: NextRequest){
       });
       }
     } catch(error){
-        return NextResponse.json({error: `Failed to generate speech: ${error}`}, {status: 500});
+        console.error("Error in TTS route:", error);
+        const apiError = toApiError(error);
+        return NextResponse.json(
+            {
+                error: apiError.message,
+                code: apiError.code,
+            },
+            { status: apiError.statusCode }
+        );
     }
 }

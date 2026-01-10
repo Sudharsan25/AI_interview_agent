@@ -1,75 +1,71 @@
 // in app/api/interview/[id]/process/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { google } from "googleapis";
-import { createClient } from "@deepgram/sdk";
-import { db } from "@/drizzle/db";
-import { Readable } from "stream";
-import { transcripts } from "@/drizzle/schema"; // Assuming a 'transcript' column exists
+import { transcribeAudio, updateInterview } from "@/lib/services";
+import { ValidationError, toApiError } from "@/lib/errors";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const interviewId = params.id;
-  const formData = await request.formData();
-
   try {
-    // 1. Authenticate with Google Drive using the service account
-    const auth = new google.auth.GoogleAuth({
-      keyFile: "aiinterviewagent-471504-cb232dcb1f06.json", // Store this securely!
-      scopes: ["https://www.googleapis.com/auth/drive"],
-    });
-    const drive = google.drive({ version: "v3", auth });
+    const { id: interviewId } = await params;
 
-    // 2. Create a new folder in Google Drive for this interview
-    const folderResponse = await drive.files.create({
-      requestBody: {
-        name: interviewId,
-        mimeType: "application/vnd.google-apps.folder",
-        parents: ["1ZfVn78hi0YH_KtFPjAioIE0LBplDV-BQ"], // ID of the folder you shared
-      },
-      fields: "id",
-    });
-    const folderId = folderResponse.data.id;
-    if (!folderId) throw new Error("Could not create Google Drive folder.");
+    if (!interviewId || typeof interviewId !== "string") {
+      throw new ValidationError("Interview ID is required");
+    }
 
-    // 3. Initialize Deepgram Client
-    const deepgram = createClient(process.env.DEEPGRAM_API_KEY!);
+    const formData = await request.formData();
+    const completedParam = formData.get("completed");
+    const completed =
+      completedParam === "true" || String(completedParam) === "true";
 
-    // 4. Process each file
+    // Process each transcript (sent as text files)
+    // TODO: Implement complete transcript-based feedback logic later
+    // This will include:
+    // - Analyzing transcripts for feedback
+    // - Storing transcripts and feedback in database
+    // - Generating comprehensive interview evaluation
+
     for (const [questionId, file] of formData.entries()) {
+      if (questionId === "completed") continue; // Skip the completed flag
+
       if (file instanceof Blob) {
-        const audioBuffer = Buffer.from(await file.arrayBuffer());
-
-        // A. Upload to Google Drive (optional, but good for storage)
-        await drive.files.create({
-          requestBody: { name: `${questionId}.webm`, parents: [folderId] },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          media: { mimeType: file.type, body: Readable.from(audioBuffer), },
-        });
-
-        // B. Transcribe with Deepgram using the buffer
-        const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-          audioBuffer,
-          { smart_format: true, model: "nova-2", language: "en-US" }
-        );
-
-        if (error) throw error;
-        const transcript = result.results.channels[0].alternatives[0].transcript;
-
-        // C. Save the transcript to your database
-        await db.insert(transcripts).values({
-            questionId: questionId,
-            transcript: transcript,
-        });
+        // Check if it's a text file (transcript) or audio file
+        if (file.type === "text/plain" || file.type.startsWith("text/")) {
+          // It's a transcript text file
+          const transcript = await file.text();
+          console.log(`Transcript for question ${questionId}:`, transcript);
+          // TODO: Store transcript in database
+        } else {
+          // It's an audio file - transcribe it
+          const audioBuffer = Buffer.from(await file.arrayBuffer());
+          const transcript = await transcribeAudio(audioBuffer);
+          console.log(`Transcript for question ${questionId}:`, transcript);
+          // TODO: Store transcript in database
+        }
       }
     }
 
-    return NextResponse.json({ success: true, message: "Processing complete." });
+    // Update interview completion status
+    await updateInterview(interviewId, { completed });
 
+    return NextResponse.json({
+      success: true,
+      message: completed
+        ? "Interview completed successfully."
+        : "Interview ended successfully.",
+    });
   } catch (error) {
     console.error("Error processing interview:", error);
-    return NextResponse.json({ success: false, message: "Processing failed." }, { status: 500 });
+    const apiError = toApiError(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: apiError.message,
+        code: apiError.code,
+      },
+      { status: apiError.statusCode }
+    );
   }
 }

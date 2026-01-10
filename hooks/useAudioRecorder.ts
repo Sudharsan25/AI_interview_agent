@@ -5,6 +5,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 // 1. Import from the Deepgram SDK
 import { createClient, LiveClient, LiveTranscriptionEvents } from "@deepgram/sdk";
+import { apiClient } from '@/lib/api/client';
 
 // The hook's public interface remains the same
 interface LiveTranscriptionHook {
@@ -30,9 +31,8 @@ export const useLiveTranscription = (): LiveTranscriptionHook => {
     setTranscript('');
 
     try {
-      // 2. Fetch the temporary key from your new Deepgram endpoint
-      const response = await fetch('/api/deepgram');
-      const data = await response.json();
+      // 2. Fetch the temporary key from your new Deepgram endpoint using API client
+      const data = await apiClient.getDeepgramKey();
 
       if (!data.apiKey) {
         throw new Error('Failed to get Deepgram temporary key.');

@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { apiClient } from '@/lib/api/client';
 
 // Define the props the hook can accept
 interface UseTextToSpeechProps {
@@ -27,19 +28,8 @@ export const useTextToSpeech = ({ onEnd }: UseTextToSpeechProps = {}) => {
     setIsLoading(true);
 
     try {
-      // 1. Call your internal API route to get the audio stream
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-
-      if (!response.ok || !response.body) {
-        throw new Error('Failed to get audio stream from the server.');
-      }
-
-      // 2. Convert the streamed response into a Blob and create a playable URL
-      const blob = await response.blob();
+      // 1. Call your internal API route to get the audio stream using API client
+      const blob = await apiClient.generateTTS(text);
       const url = URL.createObjectURL(blob);
       audioUrlRef.current = url;
 

@@ -1,16 +1,16 @@
-import { ContentWrapper } from '@/components/ComponentWrapper';
-import InterviewForm from '@/components/InterviewForm';
-import React from 'react'
+import { ContentWrapper } from "@/components/layouts";
+import { InterviewFormContainer } from "@/components/features/interview";
 
-const page = async () => {
-
+/**
+ * Interview Create Page (Server Component)
+ * Renders the interview creation form
+ */
+export default async function InterviewCreatePage() {
   return (
     <ContentWrapper>
-      <div className='flex flex-col gap-4 items-center'>
-        <InterviewForm />
+      <div className="flex flex-col gap-4 items-center">
+        <InterviewFormContainer />
       </div>
     </ContentWrapper>
-  )
+  );
 }
-
-export default page

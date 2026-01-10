@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/config";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React, { ReactNode } from "react";
 
-import Navbar from "@/components/Navbar";
+import { Navbar } from "@/components/layouts";
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth.api.getSession({

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/config";
 import { headers } from "next/headers";
-import { getInterviewsByUserId } from "@/lib/services/interviews";
+import { getInterviewsByUserId } from "@/lib/services";
+import { AuthenticationError, toApiError } from "@/lib/errors";
 
 export async function GET() {
   try {
@@ -12,10 +13,23 @@ export async function GET() {
     const userId = session?.user?.id;
 
     if (!userId) {
-      return NextResponse.json({ message: "Not authorized" }, { status: 401 });
+      throw new AuthenticationError("Authentication required");
     }
 
-    const userInterviews = await getInterviewsByUserId(userId); // 4. Return the data
+    // Debug logging
+    console.log("[user-interview] Fetching interviews for userId:", userId);
+    
+    const userInterviews = await getInterviewsByUserId(userId);
+    
+    // Debug logging
+    console.log("[user-interview] Found interviews:", userInterviews.length);
+    if (userInterviews.length > 0) {
+      console.log("[user-interview] First interview sample:", {
+        id: userInterviews[0]?.id,
+        userId: userInterviews[0]?.userId,
+        role: userInterviews[0]?.role,
+      });
+    }
 
     return NextResponse.json(
       { success: true, data: userInterviews },
@@ -23,9 +37,14 @@ export async function GET() {
     );
   } catch (error) {
     console.error("Error fetching user interviews:", error);
+    const apiError = toApiError(error);
     return NextResponse.json(
-      { success: false, message: "An unexpected error occurred." },
-      { status: 500 }
+      {
+        success: false,
+        message: apiError.message,
+        code: apiError.code,
+      },
+      { status: apiError.statusCode }
     );
   }
 }

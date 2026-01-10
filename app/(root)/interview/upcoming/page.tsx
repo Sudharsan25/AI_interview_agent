@@ -1,9 +1,10 @@
 "use client";
-import InterviewCard from "@/components/InterviewCard";
+import { InterviewCard } from "@/components/features/interview";
 import { useEffect, useState } from "react";
 import { Interview } from "@/types";
-import { ContentWrapper } from "@/components/ComponentWrapper";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ContentWrapper } from "@/components/layouts";
+import { Skeleton } from "@/components/ui";
+import { apiClient } from "@/lib/api/client";
 
 export default function Home() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -13,18 +14,12 @@ export default function Home() {
   useEffect(() => {
     const loadInterviews = async () => {
       try {
-        // --- THIS IS THE CHANGE ---
-        const response = await fetch("/api/interview/upcoming");
-        if (!response.ok) {
-          throw new Error("Failed to fetch interviews.");
+        const result = await apiClient.getUpcomingInterviews();
+        if (result.success && result.data) {
+          setInterviews(result.data as Interview[]);
         }
-        const result = await response.json();
-        if (result.success) {
-          setInterviews(result.data);
-        }
-        // --- END OF CHANGE ---
       } catch (err) {
-        setError((err as Error).message);
+        setError(err instanceof Error ? err.message : "Failed to fetch interviews.");
       } finally {
         setIsLoading(false);
       }

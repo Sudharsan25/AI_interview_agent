@@ -1,19 +1,30 @@
-import InterviewClient from "@/components/InterviewClient";
-import { getInterviewData } from "@/server/questions";
+import { getInterviewData } from "@/lib/services";
+import { notFound } from "next/navigation";
+import { InterviewSessionContainer } from "@/components/features/interview";
 
-const InterviewSession = async ({ params }: { params: { id: string } }) => {
-  const interviewSessionParams = await params;
-  const interviewId = interviewSessionParams.id as string;
+interface InterviewSessionPageProps {
+  params: Promise<{ id: string }>;
+}
 
-  const interviewData = await getInterviewData(interviewId);
+/**
+ * Interview Session Page (Server Component)
+ * Fetches interview data and renders the session container
+ * The InterviewSessionContainer is a client component, so it will hydrate on the client
+ */
+export default async function InterviewSessionPage({
+  params,
+}: InterviewSessionPageProps) {
+  const { id: interviewId } = await params;
 
-  return (
-    <>
+  try {
+    const interviewData = await getInterviewData(interviewId);
+
+    return (
       <div className="flex flex-col items-center">
-        <InterviewClient initialData={interviewData} />
+        <InterviewSessionContainer initialData={interviewData} />
       </div>
-    </>
-  );
-};
-
-export default InterviewSession;
+    );
+  } catch (error) {
+    notFound();
+  }
+}
